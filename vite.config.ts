@@ -5,7 +5,7 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.GITHUB_PAGES === 'true' ? '/studiomusical/' : './',
+  base: '/studiomusical/',
   plugins: [
     react(),
     tailwindcss()

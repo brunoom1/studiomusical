@@ -13,7 +13,7 @@ A aplicação inclui:
 - **Arpejos**: Arpejos das tétrades e tríades mapeados nos shapes ao longo de todo o braço do violão.
 - **Campo Harmônico Dinâmico**: Seleção por tom (ex: Fá Maior), mostrando todos os 7 graus, acordes, escalas e arpejos correspondentes.
 - **Módulo Especial Samba & Choro**: Progressões clássicas (II-V-I, diminutos de passagem, preparações secundárias) e shapes idiomáticos de violão de 6 e 7 cordas.
-- **Braço Interativo & Diagramas**: Renderização vetorial SVG de alta definição, suporte configurável a **4, 6 e 7 cordas**, afinação customizável corda a corda (ou presets como Cavaquinho, Ukulele, Baixo, Drop D, DADGAD, Dino 7 Cordas), alternância entre visualização Horizontal e Vertical, modos de exibição de Notas, Intervalos e Digitação (dedos 1, 2, 3, 4).
+- **Braço Interativo & Diagramas**: Renderização vetorial SVG de alta definição, suporte configurável a **4, 6 e 7 cordas**, afinação customizável corda a corda (ou presets como Cavaquinho, Ukulele, Baixo, Drop D, DADGAD, Dino 7 Cordas), visualização horizontal ergonômica, modos de exibição de Notas, Intervalos e Digitação (dedos 1, 2, 3, 4).
 - **Áudio Sintetizado**: Reprodução acústica imediata de notas, escalas, arpejos e acordes via Web Audio API.
 - **Aba de Planejamento & Roadmap Integrada**: Esta documentação e o roteiro de evolução do projeto ficam acessíveis diretamente dentro da própria página web do projeto.
 
@@ -29,7 +29,7 @@ A aplicação inclui:
 | **Tipos de Acorde** | Tríades (M, m, dim, aug, sus), Tétrades (7, 7M/7+, m7, m7b5, dim7, 6, m6, 7(9), 7(b9), 7(#9), 7(13), 7M(9)) | Filtra variações com 7, 7M, quinta diminuta e diminutos completos. |
 | **Campo Harmônico** | Maior, Menor Natural, Menor Harmônica, Menor Melódica | Mostra a tabela completa dos 7 graus com clique para explorar cada acorde e arpejo. |
 | **Estilos (Samba & Choro)** | Seleção de Tom (ex: Tom de Fá) | Exibe progressões reais (ex: F6 -> F#º -> Gm7 -> C7(13)) com os shapes tradicionais do violão. |
-| **Visualização** | Horizontal / Vertical, 6 ou 7 cordas, C-D-E / Dó-Ré-Mi, Notas / Intervalos / Dedos | Total customização para o usuário. |
+| **Visualização** | 4, 6 ou 7 cordas, C-D-E / Dó-Ré-Mi, Notas / Intervalos / Dedos | Total customização para o usuário. |
 
 ---
 

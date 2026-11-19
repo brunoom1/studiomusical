@@ -43,7 +43,6 @@ export const App: React.FC = () => {
   const [isTunerOpen, setIsTunerOpen] = useState<boolean>(false);
 
   // Preferências visuais e de áudio
-  const [orientation, setOrientation] = useState<ViewOrientation>('horizontal');
   const [displayMode, setDisplayMode] = useState<DisplayMode>('notes');
   const [notation, setNotation] = useState<NoteNotation>('anglo');
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -161,8 +160,6 @@ export const App: React.FC = () => {
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        orientation={orientation}
-        setOrientation={setOrientation}
         stringCount={stringCount}
         setStringCount={handleStringCountChange}
         currentTuning={currentTuning}
@@ -253,7 +250,6 @@ export const App: React.FC = () => {
               markers={scaleMarkers}
               stringCount={stringCount}
               tuning={currentTuning}
-              orientation={orientation}
               displayMode={displayMode}
               notation={notation}
               highlightedRoot={selectedRoot}
@@ -330,7 +326,6 @@ export const App: React.FC = () => {
                   markers={chordMarkers}
                   stringCount={stringCount}
                   tuning={currentTuning}
-                  orientation={orientation}
                   displayMode={displayMode}
                   notation={notation}
                   highlightedRoot={selectedRoot}
@@ -375,7 +370,6 @@ export const App: React.FC = () => {
               markers={arpeggioMarkers}
               stringCount={stringCount}
               tuning={currentTuning}
-              orientation={orientation}
               displayMode={displayMode}
               notation={notation}
               highlightedRoot={selectedRoot}
@@ -392,7 +386,6 @@ export const App: React.FC = () => {
             displayMode={displayMode}
             stringCount={stringCount}
             tuning={currentTuning}
-            orientation={orientation}
           />
         )}
 
@@ -403,7 +396,6 @@ export const App: React.FC = () => {
             displayMode={displayMode}
             stringCount={stringCount}
             tuning={currentTuning}
-            orientation={orientation}
           />
         )}
 

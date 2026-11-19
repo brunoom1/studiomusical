@@ -16,7 +16,6 @@ interface FretboardProps {
   markers: FretMarker[];
   stringCount?: StringCount;
   tuning?: StringTuning[];
-  orientation: ViewOrientation;
   displayMode: DisplayMode;
   notation: NoteNotation;
   maxFrets?: number;
@@ -28,7 +27,6 @@ export const Fretboard: React.FC<FretboardProps> = ({
   markers,
   stringCount = 6,
   tuning,
-  orientation,
   displayMode,
   notation,
   maxFrets = 15,
@@ -37,9 +35,6 @@ export const Fretboard: React.FC<FretboardProps> = ({
 }) => {
   const activeTuning = tuning && tuning.length > 0 ? tuning : resolveTuning(stringCount);
   const numStrings = activeTuning.length;
-
-  // Dimensões SVG
-  const isHorizontal = orientation === 'horizontal';
 
   // Configuração de geometria
   const fretWidths: number[] = [];
@@ -154,15 +149,8 @@ export const Fretboard: React.FC<FretboardProps> = ({
       {/* SVG do Braço */}
       <div className="relative flex justify-center">
         <svg
-          viewBox={
-            isHorizontal 
-              ? `0 0 ${boardWidth + 50} ${boardHeight + 40}` 
-              : `0 0 ${boardHeight + 40} ${boardWidth + 50}`
-          }
-          className={`transition-all duration-300 select-none ${
-            isHorizontal ? 'w-full min-w-[760px] h-auto' : 'w-auto max-w-[320px] h-[720px] mx-auto'
-          }`}
-          style={!isHorizontal ? { transform: 'rotate(90deg) scaleY(-1)', transformOrigin: 'center' } : {}}
+          viewBox={`0 0 ${boardWidth + 50} ${boardHeight + 40}`}
+          className="w-full min-w-[760px] h-auto transition-all duration-300 select-none"
         >
           <defs>
             {/* Gradiente de Jacarandá para a escala de madeira do violão */}

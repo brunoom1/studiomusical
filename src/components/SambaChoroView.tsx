@@ -12,15 +12,13 @@ interface SambaChoroViewProps {
   displayMode: DisplayMode;
   stringCount: StringCount;
   tuning?: StringTuning[];
-  orientation: ViewOrientation;
 }
 
 export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
   notation,
   displayMode,
   stringCount,
-  tuning,
-  orientation
+  tuning
 }) => {
   const [selectedKey, setSelectedKey] = useState<NoteName>('F');
   const [activePresetIndex, setActivePresetIndex] = useState<number>(0);
@@ -244,7 +242,6 @@ export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
             markers={activeStepMarkers}
             stringCount={stringCount}
             tuning={tuning}
-            orientation={orientation}
             displayMode={displayMode}
             notation={notation}
             highlightedRoot={activeStep.shape.root}

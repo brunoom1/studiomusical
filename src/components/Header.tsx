@@ -15,8 +15,6 @@ import { ActiveTab, ViewOrientation, StringCount, DisplayMode, NoteNotation, Str
 interface HeaderProps {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
-  orientation: ViewOrientation;
-  setOrientation: (o: ViewOrientation) => void;
   stringCount: StringCount;
   setStringCount: (count: StringCount) => void;
   currentTuning: StringTuning[];
@@ -32,8 +30,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   setActiveTab,
-  orientation,
-  setOrientation,
   stringCount,
   setStringCount,
   currentTuning,
@@ -123,28 +119,6 @@ export const Header: React.FC<HeaderProps> = ({
                 {currentTuning.map(s => s.openNote).join(' ')}
               </span>
             </button>
-
-            {/* Orientação Horizontal / Vertical */}
-            <div className="bg-stone-800/80 p-0.5 rounded-lg border border-stone-700/60 flex items-center">
-              <button
-                onClick={() => setOrientation('horizontal')}
-                className={`px-2.5 py-1 rounded-md transition-all font-medium ${
-                  orientation === 'horizontal' ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-300 hover:text-white'
-                }`}
-                title="Braço na horizontal (visão do músico)"
-              >
-                Horizontal
-              </button>
-              <button
-                onClick={() => setOrientation('vertical')}
-                className={`px-2.5 py-1 rounded-md transition-all font-medium ${
-                  orientation === 'vertical' ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-300 hover:text-white'
-                }`}
-                title="Braço na vertical (estilo diagrama)"
-              >
-                Vertical
-              </button>
-            </div>
 
             {/* Notação C D E vs Dó Ré Mi */}
             <div className="bg-stone-800/80 p-0.5 rounded-lg border border-stone-700/60 flex items-center">

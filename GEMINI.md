@@ -11,7 +11,7 @@ O **Studio Musical** é uma aplicação web de cordas interativas para músicos 
 - **Arpejos** mapeados em shapes ao longo de todo o braço do violão.
 - **Campo Harmônico Dinâmico** (maior, menor natural, menor harmônica, menor melódica) por tom.
 - **Módulo Especial de Samba & Choro** com cadências tradicionais e shapes idiomáticos de violão (6 e 7 cordas).
-- Braço interativo do violão em SVG com alternância Horizontal/Vertical, 6 e 7 cordas, notas/intervalos/dedos e áudio integrado (Web Audio API).
+- Braço interativo do violão em SVG, suporte a 4, 6 e 7 cordas com afinação customizada, notas/intervalos/dedos e áudio integrado (Web Audio API).
 - Aba interna de planejamento e roadmap navegável no próprio app.
 
 ---

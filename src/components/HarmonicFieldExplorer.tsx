@@ -16,7 +16,6 @@ interface HarmonicFieldExplorerProps {
   displayMode: DisplayMode;
   stringCount: StringCount;
   tuning?: StringTuning[];
-  orientation: ViewOrientation;
 }
 
 export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
@@ -25,8 +24,7 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
   notation,
   displayMode,
   stringCount,
-  tuning,
-  orientation
+  tuning
 }) => {
   const [fieldType, setFieldType] = useState<HarmonicFieldType>('major');
   const [selectedDegreeIndex, setSelectedDegreeIndex] = useState<number>(0);
@@ -220,7 +218,6 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
             markers={currentMarkers}
             stringCount={stringCount}
             tuning={tuning}
-            orientation={orientation}
             displayMode={displayMode}
             notation={notation}
             highlightedRoot={activeDegree.chordRoot}

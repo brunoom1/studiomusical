@@ -1,11 +1,11 @@
-# Diretrizes do Agente - Cordas.com
+# Diretrizes do Agente - Studio Musical (Cordas Interativas)
 
-Este arquivo define as diretrizes, arquitetura e convenções do projeto **Cordas.com** para o agente e para a equipe de desenvolvimento.
+Este arquivo define as diretrizes, arquitetura e convenções do projeto **Studio Musical** para o agente e para a equipe de desenvolvimento.
 
 ---
 
 ## 1. Visão do Projeto
-O **Cordas.com** é uma aplicação web interativa para violonistas e músicos, focada em:
+O **Studio Musical** é uma aplicação web de cordas interativas para músicos e violonistas, focada em:
 - Exploração visual e sonora de **shapes de escalas** (maiores, menores, menores harmônicas, modos, pentatônicas, etc.).
 - Catálogo de **acordes e variações** (tríades e tétrades com 7, 7M/7+, b5, m7b5, dim7, 9, 13).
 - **Arpejos** mapeados em shapes ao longo de todo o braço do violão.

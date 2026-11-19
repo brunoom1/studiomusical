@@ -51,7 +51,7 @@ export const App: React.FC = () => {
 
   // Rastreamento de abas no Google Analytics
   useEffect(() => {
-    trackPageView(`Cordas.com - ${activeTab}`, `/${activeTab}`);
+    trackPageView(`Studio Musical - ${activeTab}`, `/${activeTab}`);
   }, [activeTab]);
 
   // Manipular alteração de contagem de cordas
@@ -426,7 +426,7 @@ export const App: React.FC = () => {
       <footer className="border-t border-stone-800/80 bg-stone-900/60 py-4 text-center text-xs text-stone-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>
-            Cordas.com © 2026 - Guia de Violão, Harmonia e Improvisação
+            Studio Musical © 2026 - Guia de Cordas, Harmonia e Improvisação
           </p>
           <div className="flex items-center gap-4 text-[11px] text-stone-400">
             <span>{stringCount} Cordas ({currentTuning.map(s => s.openNote).join(' ')})</span>

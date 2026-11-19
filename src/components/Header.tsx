@@ -61,15 +61,15 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between py-3 gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 flex items-center justify-center shadow-lg shadow-amber-950/40 border border-amber-500/30">
-              <span className="font-serif font-black text-amber-100 text-xl tracking-tighter">C</span>
+              <span className="font-serif font-black text-amber-100 text-xl tracking-tighter">S</span>
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold tracking-tight text-amber-50 font-serif">
-                  Cordas<span className="text-amber-400">.com</span>
+                  Studio <span className="text-amber-400">Musical</span>
                 </h1>
                 <span className="text-[10px] font-semibold uppercase tracking-wider bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">
-                  Violão Interativo
+                  Cordas Interativas
                 </span>
               </div>
               <p className="text-xs text-stone-400 hidden sm:block">

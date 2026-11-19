@@ -7,7 +7,7 @@ import { getArpeggioFretboardMarkers } from '../arpeggios';
 import { SAMBA_CHORO_PRESETS } from '../sambaChoroPresets';
 import { createStringTuning, GUITAR_TUNING_DROP_D, TUNING_CAVAQUINHO_4 } from '../constants';
 
-describe('Motor de Teoria Musical - Cordas.com', () => {
+describe('Motor de Teoria Musical - Studio Musical', () => {
   it('deve calcular corretamente a transposição cromática', () => {
     expect(transposeNote('C', 2)).toBe('D');
     expect(transposeNote('F', 7)).toBe('C');

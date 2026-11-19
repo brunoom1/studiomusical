@@ -1,11 +1,11 @@
-# Planejamento & Arquitetura do Projeto: Cordas.com
+# Planejamento & Arquitetura do Projeto: Studio Musical
 
-Guia Interativo de Shapes, Escalas, Acordes, Arpejos e Repertório para Violão.
+Cordas Interativas: Guia de Shapes, Escalas, Acordes, Arpejos e Repertório.
 
 ---
 
 ## 1. Visão Geral
-O **Cordas.com** é uma aplicação web completa e interativa concebida para violonistas de todos os níveis, com foco especial no violão brasileiro (Choro, Samba, Bossa Nova) e no estudo aprofundado de harmonia e improvisação.
+O **Studio Musical** é uma aplicação web completa de cordas interativas concebida para violonistas e músicos de todos os níveis, com foco especial no violão brasileiro (Choro, Samba, Bossa Nova) e no estudo aprofundado de harmonia e improvisação.
 
 A aplicação inclui:
 - **Catálogo de Escalas**: Maiores, Menores (Natural, Harmônica, Melódica), Pentatônicas, Modos Gregos, Diminutas e Tons Inteiros.

@@ -1,7 +1,7 @@
 {
-  "name": "cordas.com",
+  "name": "studiomusical",
   "version": "1.0.0",
-  "description": "Cordas.com - Guia Interativo de Shapes, Escalas, Acordes, Arpejos e Samba & Choro para Violão",
+  "description": "Studio Musical - Cordas Interativas: Guia de Shapes, Escalas, Acordes, Arpejos e Samba & Choro",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,8 +10,10 @@
     "test": "vitest run"
   },
   "keywords": [
+    "studiomusical",
     "violao",
     "guitar",
+    "cordas",
     "scales",
     "chords",
     "arpeggios",
@@ -20,7 +22,7 @@
     "choro",
     "harmonic-field"
   ],
-  "author": "Cordas.com",
+  "author": "Studio Musical",
   "license": "MIT",
   "dependencies": {
     "clsx": "^2.1.1",

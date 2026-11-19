@@ -26,7 +26,7 @@ export const ProjectPlanView: React.FC = () => {
           </span>
         </div>
         <h1 className="text-2xl font-serif font-black text-amber-50 tracking-tight">
-          Planejamento Oficial do Cordas.com
+          Planejamento Oficial do Studio Musical
         </h1>
         <p className="text-xs text-stone-300 mt-1 max-w-3xl leading-relaxed">
           Esta documentação técnica é gerada e mantida em sincronia com o repositório, refletindo a arquitetura harmônica, regras de desenvolvimento, catálogo de filtros e arquivos do agente.
@@ -159,7 +159,7 @@ export const ProjectPlanView: React.FC = () => {
         </div>
 
         <pre className="p-4 bg-stone-950 rounded-xl font-mono text-xs text-stone-300 overflow-x-auto border border-stone-800">
-{`cordas.com/
+{`studiomusical/
 ├── GEMINI.md                    # Regras & diretrizes do agente
 ├── PLAN.md                      # Planejamento completo do projeto
 ├── src/

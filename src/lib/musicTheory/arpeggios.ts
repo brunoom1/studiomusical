@@ -1,6 +1,7 @@
-import { NoteName, FretMarker, StringCount, StringTuning } from '../../types/music';
+import { NoteName, FretMarker, StringCount, StringTuning, IntervalType } from '../../types/music';
 import { CHORD_FORMULAS, getChordNotes } from './chords';
-import { getNoteAtFret, identifyInterval, resolveTuning } from './fretboard';
+import { getNoteIndex, identifyInterval, resolveTuning } from './fretboard';
+import { midiToFrequency } from './constants';
 
 export interface ArpeggioPattern {
   id: string;
@@ -115,23 +116,43 @@ export function getArpeggioFretboardMarkers(
   if (!formula) return [];
 
   const tuning = resolveTuning(tuningInput);
-  const notes = getChordNotes(root, formula);
+  const chordNotes = getChordNotes(root, formula);
+  const rootIndex = getNoteIndex(root);
   const markers: FretMarker[] = [];
 
-  const minFret = fretRange ? fretRange.min : 0;
-  const maxFret = fretRange ? fretRange.max : 15;
+  // Mapeamento por Pitch Class para arpejos
+  const chordMap = new Map<number, { noteName: NoteName; interval: IntervalType; isRoot: boolean }>();
+  formula.intervals.forEach((semitones, idx) => {
+    const pitchClass = (rootIndex + semitones) % 12;
+    const noteName = chordNotes[idx];
+    const interval = (formula.intervalNames[idx] as IntervalType) || identifyInterval(root, noteName);
+    chordMap.set(pitchClass, {
+      noteName,
+      interval,
+      isRoot: semitones % 12 === 0
+    });
+  });
+
+  const minFret = fretRange !== undefined ? fretRange.min : 0;
+  const maxFret = fretRange !== undefined ? fretRange.max : 15;
 
   for (let s = 0; s < tuning.length; s++) {
+    const stringInfo = tuning[s];
+    const openNoteIndex = getNoteIndex(stringInfo.openNote);
+
     for (let f = minFret; f <= maxFret; f++) {
-      const { note, frequency } = getNoteAtFret(s, f, tuning);
-      if (notes.includes(note)) {
-        const interval = identifyInterval(root, note);
+      const fretPitchClass = (openNoteIndex + f) % 12;
+      const match = chordMap.get(fretPitchClass);
+
+      if (match) {
+        const midi = stringInfo.midiNumber + f;
+        const frequency = midiToFrequency(midi);
         markers.push({
           stringIndex: s,
           fret: f,
-          note,
-          interval,
-          isRoot: note === root,
+          note: match.noteName,
+          interval: match.interval,
+          isRoot: match.isRoot,
           frequency
         });
       }

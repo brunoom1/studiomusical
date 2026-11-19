@@ -12,7 +12,7 @@ import {
   ChordShape,
   StringTuning
 } from './types/music';
-import { SCALES_DATABASE, getScaleFretboardMarkers, getScaleNotes, CAGED_SHAPES_CONFIG } from './lib/musicTheory/scales';
+import { SCALES_DATABASE, getScaleFretboardMarkers, getScaleNotes, CAGED_SHAPES_CONFIG, getCagedFretRange } from './lib/musicTheory/scales';
 import { CHORD_FORMULAS, generateShapesForChord, getChordNotes } from './lib/musicTheory/chords';
 import { getArpeggioFretboardMarkers } from './lib/musicTheory/arpeggios';
 import { NOTE_TO_SOLFEGE, GUITAR_TUNING_6, TUNING_PRESETS } from './lib/musicTheory/constants';
@@ -70,11 +70,7 @@ export const App: React.FC = () => {
   // Cálculo dos marcadores de Escala para o braço com a afinação ativa
   const scaleFretRange = selectedCagedShape === 'all' 
     ? undefined 
-    : (() => {
-        const found = CAGED_SHAPES_CONFIG.find(c => c.id === selectedCagedShape);
-        if (!found) return undefined;
-        return { min: found.minFretOffset, max: found.maxFretOffset };
-      })();
+    : getCagedFretRange(selectedRoot, selectedCagedShape, currentTuning);
 
   const scaleMarkers = getScaleFretboardMarkers(
     selectedRoot, 
@@ -89,6 +85,13 @@ export const App: React.FC = () => {
   // Cálculo dos shapes de Acordes para a tônica e fórmula selecionadas de acordo com a contagem de cordas
   const chordShapes = generateShapesForChord(selectedRoot, selectedChordFormula.id, stringCount);
   const activeChordShape: ChordShape | undefined = chordShapes[selectedChordShapeIndex] || chordShapes[0];
+
+  // Cordas abafadas/mutadas do acorde ativo (não tocadas)
+  const chordMutedStrings = activeChordShape
+    ? activeChordShape.frets
+        .map((fret, idx) => (fret === null ? idx : null))
+        .filter((idx): idx is number => idx !== null && idx < currentTuning.length)
+    : [];
 
   // Marcadores do acorde ativo no braço com cálculo exato de intervalo e tônica
   const chordMarkers = activeChordShape
@@ -333,6 +336,7 @@ export const App: React.FC = () => {
                   displayMode={displayMode}
                   notation={notation}
                   highlightedRoot={selectedRoot}
+                  mutedStrings={chordMutedStrings}
                 />
               </div>
             )}

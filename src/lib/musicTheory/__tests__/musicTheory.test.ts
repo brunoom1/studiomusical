@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { transposeNote, identifyInterval, getNoteAtFret, resolveTuning } from '../fretboard';
-import { SCALES_DATABASE, getScaleNotes, getScaleFretboardMarkers } from '../scales';
+import { SCALES_DATABASE, getScaleNotes, getScaleFretboardMarkers, getCagedFretRange } from '../scales';
 import { generateShapesForChord } from '../chords';
 import { getHarmonicField } from '../harmonicField';
 import { getArpeggioFretboardMarkers } from '../arpeggios';
@@ -160,5 +160,50 @@ describe('Motor de Teoria Musical - Studio Musical', () => {
     expect(presetF!.steps[1].chord).toContain('F#º');
     expect(presetF!.steps[2].chord).toBe('Gm7');
     expect(presetF!.steps[3].chord).toContain('C7(13)');
+  });
+
+  it('deve filtrar com exatidão notas de cordas soltas que não pertencem à tonalidade selecionada', () => {
+    const majorScale = SCALES_DATABASE.find(s => s.id === 'major')!;
+
+    // No Tom de Fá Maior (F G A Bb C D E):
+    // Cordas do violão: 0: E4, 1: B3, 2: G3, 3: D3, 4: A2, 5: E2
+    // A corda 1 solta (B) NÃO pertence à escala de Fá maior (possui Bb)!
+    const markersF = getScaleFretboardMarkers('F', majorScale, 6);
+    const openMarkersF = markersF.filter(m => m.fret === 0);
+
+    const openStringIndicesF = openMarkersF.map(m => m.stringIndex);
+    expect(openStringIndicesF).toContain(0); // E
+    expect(openStringIndicesF).not.toContain(1); // B solta NÃO deve estar presente!
+    expect(openStringIndicesF).toContain(2); // G
+    expect(openStringIndicesF).toContain(3); // D
+    expect(openStringIndicesF).toContain(4); // A
+    expect(openStringIndicesF).toContain(5); // E
+
+    // E as notas com bemol devem ser grafadas como Bb (não A#)
+    const bbMarkers = markersF.filter(m => m.note === 'Bb');
+    expect(bbMarkers.length).toBeGreaterThan(0);
+    const aSharpMarkers = markersF.filter(m => m.note === 'A#');
+    expect(aSharpMarkers.length).toBe(0);
+
+    // No Tom de F# Maior:
+    // E natural, G natural, D natural, A natural NÃO pertencem à escala de F# maior!
+    // Apenas a corda B solta pertence.
+    const markersFSharp = getScaleFretboardMarkers('F#', majorScale, 6);
+    const openMarkersFSharp = markersFSharp.filter(m => m.fret === 0);
+    const openStringIndicesFSharp = openMarkersFSharp.map(m => m.stringIndex);
+
+    expect(openStringIndicesFSharp).toEqual([1]); // Apenas a corda B (índice 1) solta é válida
+  });
+
+  it('deve calcular dinamicamente o alcance de trastes dos shapes CAGED a partir da tônica', () => {
+    // Para G Maior: Shape E tem tônica na 6ª corda traste 3 -> casas 3 a 7
+    const rangeG = getCagedFretRange('G', 'shape_e');
+    expect(rangeG.min).toBe(3);
+    expect(rangeG.max).toBe(7);
+
+    // Para A Maior: Shape E tem tônica na 6ª corda traste 5 -> casas 5 a 9
+    const rangeA = getCagedFretRange('A', 'shape_e');
+    expect(rangeA.min).toBe(5);
+    expect(rangeA.max).toBe(9);
   });
 });

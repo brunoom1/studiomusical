@@ -197,6 +197,13 @@ na página planejamento, gostaria de deixar um histórico das mensagens que troc
     userPrompt: `Sobre o efeito ao passar o mouse por sobre a nota no braço, pode só aplicar um pequeno efeito de scala, sem crescer muito
 Vamos manter o esquema de cores opicional, pode ter um botão mostrar todos os intervalos, e ai, se ativo, ele apresenta várias cores dependendo do intervalo.`,
     agentSummary: 'Ajuste do hover para uma expansão sutil e suave de 8% (scale-108) com ponto de origem centralizado no círculo da nota (transformOrigin). Adição do botão "Colorir por Intervalo" no topo do braço: quando desativado (padrão), exibe a paleta verde esmeralda unificada com tônica dourada; quando ativado, expande para a paleta multicolorida por intervalo (2ª, 3ª, 4ª, 5ª, 6ª, 7ª) e alterna dinamicamente a legenda.'
+  },
+  {
+    id: 24,
+    title: 'Correção de Notas de Cordas Soltas e Separação Visual da Cabeceira',
+    badge: 'Correção de Bug & Braço',
+    userPrompt: `Dependendo do tom fundamental que escolhemos as notas da corda solta ficam bugadas, aparecendo as vezes notas que não deveriam estar ali`,
+    agentSummary: 'Identificação e resolução de 3 causas raízes: 1) No motor de escalas e arpejos, migrada a verificação para mapeamento exato por Pitch Class (0 a 11) com resolução enarmônica fiel à escala (ex: Bb em Fá maior e não A#); 2) No braço interativo, criada coluna dedicada de tarraxas (AFIN.) e zona independente para cordas soltas (SOLTA), garantindo que apenas cordas com notas pertencentes ao tom sejam marcadas e exibindo o indicador ✕ em cordas mutadas de acordes, eliminando sobreposições e notas "fantasmas"; 3) Parametrização dinâmica do range de casas dos shapes CAGED de acordo com a tônica.'
   }
 ];
 

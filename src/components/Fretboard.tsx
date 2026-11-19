@@ -22,6 +22,7 @@ interface FretboardProps {
   maxFrets?: number;
   highlightedRoot?: NoteName;
   showIntervalColors?: boolean;
+  mutedStrings?: number[];
   onToggleIntervalColors?: (enabled: boolean) => void;
   onMarkerClick?: (marker: FretMarker) => void;
 }
@@ -35,6 +36,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
   maxFrets = 15,
   highlightedRoot,
   showIntervalColors,
+  mutedStrings = [],
   onToggleIntervalColors,
   onMarkerClick
 }) => {
@@ -253,8 +255,8 @@ export const Fretboard: React.FC<FretboardProps> = ({
       {/* SVG do Braço */}
       <div className="relative flex justify-center">
         <svg
-          viewBox={`0 0 ${boardWidth + 50} ${boardHeight + 40}`}
-          className="w-full min-w-[760px] h-auto transition-all duration-300 select-none"
+          viewBox={`0 0 ${boardWidth + 80} ${boardHeight + 46}`}
+          className="w-full min-w-[780px] h-auto transition-all duration-300 select-none"
         >
           <defs>
             {/* Gradiente de Jacarandá para a escala de madeira do violão */}
@@ -279,9 +281,27 @@ export const Fretboard: React.FC<FretboardProps> = ({
             </linearGradient>
           </defs>
 
+          {/* Cabeçalhos das Colunas da Cabeceira */}
+          <text
+            x={14}
+            y={13}
+            textAnchor="middle"
+            className="fill-stone-500 text-[8px] font-mono uppercase font-bold tracking-wider select-none"
+          >
+            AFIN.
+          </text>
+          <text
+            x={40}
+            y={13}
+            textAnchor="middle"
+            className="fill-stone-500 text-[8px] font-mono uppercase font-bold tracking-wider select-none"
+          >
+            SOLTA
+          </text>
+
           {/* Madeira da escala (Fretboard wood) */}
           <rect
-            x={40}
+            x={64}
             y={20}
             width={boardWidth - 20}
             height={boardHeight}
@@ -292,7 +312,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
 
           {/* Marcas de Casas (Dots / Incrustações peroladas) */}
           {FRET_MARKERS_DOTS.filter(f => f <= maxFrets).map(fret => {
-            const centerX = (fretPositions[fret - 1] + fretPositions[fret]) / 2 + 40;
+            const centerX = (fretPositions[fret - 1] + fretPositions[fret]) / 2 + 64;
             const centerY = 20 + boardHeight / 2;
             return (
               <circle
@@ -309,13 +329,13 @@ export const Fretboard: React.FC<FretboardProps> = ({
           {maxFrets >= 12 && FRET_MARKERS_DOUBLE.includes(12) && (
             <g key="double-dot-12">
               <circle
-                cx={(fretPositions[11] + fretPositions[12]) / 2 + 40}
+                cx={(fretPositions[11] + fretPositions[12]) / 2 + 64}
                 cy={20 + boardHeight / 3}
                 r={4}
                 className="fill-stone-400/30 stroke-stone-300/40"
               />
               <circle
-                cx={(fretPositions[11] + fretPositions[12]) / 2 + 40}
+                cx={(fretPositions[11] + fretPositions[12]) / 2 + 64}
                 cy={20 + (boardHeight * 2) / 3}
                 r={4}
                 className="fill-stone-400/30 stroke-stone-300/40"
@@ -325,9 +345,9 @@ export const Fretboard: React.FC<FretboardProps> = ({
 
           {/* Pestana (Nut / Traste 0) */}
           <rect
-            x={36}
+            x={56}
             y={18}
-            width={7}
+            width={8}
             height={boardHeight + 4}
             fill="url(#boneNut)"
             rx={3}
@@ -338,9 +358,9 @@ export const Fretboard: React.FC<FretboardProps> = ({
           {fretPositions.slice(1, maxFrets + 1).map((fretX, index) => (
             <line
               key={`fret-${index + 1}`}
-              x1={fretX + 40}
+              x1={fretX + 64}
               y1={20}
-              x2={fretX + 40}
+              x2={fretX + 64}
               y2={20 + boardHeight}
               stroke="url(#fretWire)"
               strokeWidth={index === 0 ? 3 : 2}
@@ -351,7 +371,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
           {fretPositions.slice(1, maxFrets + 1).map((fretX, index) => {
             const fretNum = index + 1;
             const prevX = fretPositions[index];
-            const centerX = (prevX + fretX) / 2 + 40;
+            const centerX = (prevX + fretX) / 2 + 64;
             const isMarked = [3, 5, 7, 9, 12, 15, 17].includes(fretNum);
 
             return (
@@ -369,42 +389,72 @@ export const Fretboard: React.FC<FretboardProps> = ({
             );
           })}
 
-          {/* Cordas do Violão */}
+          {/* Cordas do Violão e Cabeçote de Afinação */}
           {Array.from({ length: numStrings }).map((_, stringIndex) => {
             const y = 20 + 18 + stringIndex * stringSpacing;
-            // A 1ª corda (E aguda) é mais fina, a 6ª e 7ª cordas são bordões grossos com bronze/aço
+            // A 1ª corda (aguda) é fina, os bordões são mais grossos com bronze/aço
             const isBass = stringIndex >= Math.floor(numStrings / 2);
             const strokeWidth = 1 + (stringIndex * 0.45);
-            const stringColor = isBass ? '#d97706' : '#f3f4f6'; // Bordão dourado vs nylon transparente
+            const stringColor = isBass ? '#d97706' : '#f3f4f6';
 
             const stringInfo = activeTuning[stringIndex];
             const openNoteLabel = notation === 'solfege' 
               ? NOTE_TO_SOLFEGE[stringInfo.openNote] 
               : stringInfo.openNote;
 
+            const isMuted = mutedStrings.includes(stringIndex);
+            const hasOpenMarker = markers.some(m => m.stringIndex === stringIndex && m.fret === 0);
+
             return (
               <g key={`string-${stringIndex}`}>
-                {/* Nome da corda solta à esquerda da pestana */}
-                <text
-                  x={22}
-                  y={y + 4}
-                  textAnchor="middle"
-                  className="fill-stone-400 text-[10px] font-mono font-bold select-none cursor-pointer hover:fill-amber-400"
+                {/* Badge da Tarraxa / Afinação da corda à esquerda */}
+                <g
+                  className="cursor-pointer group"
                   onClick={() => guitarAudio.playNote(stringInfo.frequency)}
                 >
-                  {openNoteLabel}
-                </text>
+                  <rect
+                    x={3}
+                    y={y - 9}
+                    width={22}
+                    height={18}
+                    rx={5}
+                    className="fill-stone-900 stroke-stone-700/80 stroke-1 group-hover:stroke-amber-400 group-hover:fill-stone-800 transition-colors"
+                  />
+                  <text
+                    x={14}
+                    y={y + 3.5}
+                    textAnchor="middle"
+                    className="fill-stone-400 group-hover:fill-amber-300 text-[10px] font-mono font-bold select-none transition-colors"
+                  >
+                    {openNoteLabel}
+                  </text>
+                </g>
 
-                {/* Linha da corda */}
+                {/* Linha da corda do violão (passa pela zona de corda solta e pestana) */}
                 <line
-                  x1={36}
+                  x1={26}
                   y1={y}
-                  x2={boardWidth + 10}
+                  x2={boardWidth + 50}
                   y2={y}
                   stroke={stringColor}
                   strokeWidth={strokeWidth}
                   strokeOpacity={0.85}
                 />
+
+                {/* Símbolo de corda abafada (✕) se o acorde marcar corda mutada */}
+                {isMuted && !hasOpenMarker && (
+                  <g>
+                    <title>Corda abafada / não tocada</title>
+                    <text
+                      x={40}
+                      y={y + 4}
+                      textAnchor="middle"
+                      className="fill-red-400/90 font-bold text-xs select-none pointer-events-none"
+                    >
+                      ✕
+                    </text>
+                  </g>
+                )}
               </g>
             );
           })}
@@ -412,10 +462,10 @@ export const Fretboard: React.FC<FretboardProps> = ({
           {/* Marcadores de Notas / Shapes */}
           {markers.map((marker, idx) => {
             const y = 20 + 18 + marker.stringIndex * stringSpacing;
-            // Se fret for 0 (corda solta), coloca antes da pestana
+            // Se fret for 0 (corda solta tocada), coloca na zona de corda solta (x = 40)
             const x = marker.fret === 0 
-              ? 18 
-              : (fretPositions[marker.fret - 1] + fretPositions[marker.fret]) / 2 + 40;
+              ? 40 
+              : (fretPositions[marker.fret - 1] + fretPositions[marker.fret]) / 2 + 64;
 
             const styling = getMarkerColor(marker);
             const label = getMarkerLabel(marker);

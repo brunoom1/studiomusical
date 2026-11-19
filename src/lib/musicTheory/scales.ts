@@ -1,5 +1,6 @@
-import { ScaleDefinition, NoteName, FretMarker, StringCount, StringTuning } from '../../types/music';
-import { transposeNote, getNoteAtFret, identifyInterval, resolveTuning } from './fretboard';
+import { ScaleDefinition, NoteName, FretMarker, StringCount, StringTuning, IntervalType } from '../../types/music';
+import { transposeNote, getNoteAtFret, identifyInterval, resolveTuning, getNoteIndex } from './fretboard';
+import { midiToFrequency } from './constants';
 
 export const SCALES_DATABASE: ScaleDefinition[] = [
   {
@@ -177,24 +178,43 @@ export function getScaleFretboardMarkers(
 ): FretMarker[] {
   const tuning = resolveTuning(tuningInput);
   const scaleNotes = getScaleNotes(root, scale);
+  const rootIndex = getNoteIndex(root);
   const markers: FretMarker[] = [];
 
-  const minFret = fretRange ? fretRange.min : 0;
-  const maxFret = fretRange ? fretRange.max : maxFrets;
+  // Mapeamento preciso por Pitch Class (semitom absoluto de 0 a 11)
+  // Isso evita qualquer falha de comparação entre grafias enharmônicas (ex: A# vs Bb)
+  const scaleMap = new Map<number, { noteName: NoteName; interval: IntervalType; isRoot: boolean }>();
+  scale.intervals.forEach((semitones, idx) => {
+    const pitchClass = (rootIndex + semitones) % 12;
+    const noteName = scaleNotes[idx];
+    const interval = (scale.intervalNames[idx] as IntervalType) || identifyInterval(root, noteName);
+    scaleMap.set(pitchClass, {
+      noteName,
+      interval,
+      isRoot: semitones === 0
+    });
+  });
+
+  const minFret = fretRange !== undefined ? fretRange.min : 0;
+  const maxFret = fretRange !== undefined ? fretRange.max : maxFrets;
 
   for (let s = 0; s < tuning.length; s++) {
-    for (let f = minFret; f <= maxFret; f++) {
-      const { note, frequency } = getNoteAtFret(s, f, tuning);
-      const isScaleNote = scaleNotes.includes(note);
+    const stringInfo = tuning[s];
+    const openNoteIndex = getNoteIndex(stringInfo.openNote);
 
-      if (isScaleNote) {
-        const interval = identifyInterval(root, note);
+    for (let f = minFret; f <= maxFret; f++) {
+      const fretPitchClass = (openNoteIndex + f) % 12;
+      const match = scaleMap.get(fretPitchClass);
+
+      if (match) {
+        const midi = stringInfo.midiNumber + f;
+        const frequency = midiToFrequency(midi);
         markers.push({
           stringIndex: s,
           fret: f,
-          note,
-          interval,
-          isRoot: note === root,
+          note: match.noteName,
+          interval: match.interval,
+          isRoot: match.isRoot,
           frequency
         });
       }
@@ -209,15 +229,63 @@ export interface ScaleBoxShape {
   id: string;
   name: string; // "Shape 1 (Posição E)", "Shape 2 (Posição D)", etc.
   cagedLetter: 'C' | 'A' | 'G' | 'E' | 'D';
-  minFretOffset: number; // Offset relativo à tônica na 6ª ou 5ª corda
-  maxFretOffset: number;
   description: string;
 }
 
 export const CAGED_SHAPES_CONFIG: ScaleBoxShape[] = [
-  { id: 'shape_e', name: 'Shape 1 (Base Corda 6 - Forma de E)', cagedLetter: 'E', minFretOffset: 0, maxFretOffset: 4, description: 'Tônica na 6ª corda. Posição básica e mais usada para solos e arpejos.' },
-  { id: 'shape_d', name: 'Shape 2 (Base Corda 4 - Forma de D)', cagedLetter: 'D', minFretOffset: 2, maxFretOffset: 6, description: 'Tônica na 4ª corda. Conecta a região média do braço.' },
-  { id: 'shape_c', name: 'Shape 3 (Base Corda 5 - Forma de C)', cagedLetter: 'C', minFretOffset: 4, maxFretOffset: 8, description: 'Tônica na 5ª corda. Excelente para arpejos e melodias fluidas.' },
-  { id: 'shape_a', name: 'Shape 4 (Base Corda 5 - Forma de A)', cagedLetter: 'A', minFretOffset: 7, maxFretOffset: 11, description: 'Tônica na 5ª corda. O shape clássico de pestana em Lá.' },
-  { id: 'shape_g', name: 'Shape 5 (Base Corda 6 - Forma de G)', cagedLetter: 'G', minFretOffset: 9, maxFretOffset: 13, description: 'Tônica na 6ª corda. Shape amplo que completa o ciclo do braço.' }
+  { id: 'shape_e', name: 'Shape 1 (Base Corda 6 - Forma de E)', cagedLetter: 'E', description: 'Tônica na 6ª corda. Posição básica e mais usada para solos e arpejos.' },
+  { id: 'shape_d', name: 'Shape 2 (Base Corda 4 - Forma de D)', cagedLetter: 'D', description: 'Tônica na 4ª corda. Conecta a região média do braço.' },
+  { id: 'shape_c', name: 'Shape 3 (Base Corda 5 - Forma de C)', cagedLetter: 'C', description: 'Tônica na 5ª corda. Excelente para arpejos e melodias fluidas.' },
+  { id: 'shape_a', name: 'Shape 4 (Base Corda 5 - Forma de A)', cagedLetter: 'A', description: 'Tônica na 5ª corda. O shape clássico de pestana em Lá.' },
+  { id: 'shape_g', name: 'Shape 5 (Base Corda 6 - Forma de G)', cagedLetter: 'G', description: 'Tônica na 6ª corda. Shape amplo que completa o ciclo do braço.' }
 ];
+
+/**
+ * Calcula o range de trastes { min, max } para um shape CAGED adaptado dinamicamente
+ * à tônica selecionada, garantindo que shapes que não usam cordas soltas não comecem na casa 0.
+ */
+export function getCagedFretRange(
+  root: NoteName,
+  shapeId: string,
+  _tuningInput: StringTuning[] | StringCount = 6
+): { min: number; max: number } {
+  const rootIdx = getNoteIndex(root);
+  const eIdx = getNoteIndex('E');
+  const aIdx = getNoteIndex('A');
+  const dIdx = getNoteIndex('D');
+
+  // Traste da tônica nas cordas mestras (afinação padrão)
+  const fretOn6 = (rootIdx - eIdx + 12) % 12; // 6ª corda (E)
+  const fretOn5 = (rootIdx - aIdx + 12) % 12; // 5ª corda (A)
+  const fretOn4 = (rootIdx - dIdx + 12) % 12; // 4ª corda (D)
+
+  switch (shapeId) {
+    case 'shape_e': {
+      // Shape E: tônica na 6ª corda
+      const min = fretOn6;
+      return { min, max: min + 4 };
+    }
+    case 'shape_d': {
+      // Shape D: tônica na 4ª corda
+      const min = fretOn4;
+      return { min, max: min + 4 };
+    }
+    case 'shape_c': {
+      // Shape C: tônica na 5ª corda na frente do shape
+      const base = fretOn5 >= 3 ? fretOn5 - 3 : fretOn5 + 9;
+      return { min: base, max: base + 4 };
+    }
+    case 'shape_a': {
+      // Shape A: tônica na 5ª corda
+      const min = fretOn5;
+      return { min, max: min + 4 };
+    }
+    case 'shape_g': {
+      // Shape G: tônica na 6ª corda na frente do shape
+      const base = fretOn6 >= 3 ? fretOn6 - 3 : fretOn6 + 9;
+      return { min: base, max: base + 4 };
+    }
+    default:
+      return { min: 0, max: 15 };
+  }
+}

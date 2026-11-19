@@ -189,6 +189,14 @@ na página planejamento, gostaria de deixar um histórico das mensagens que troc
     badge: 'Design & Visual',
     userPrompt: `vamos colocar todas as bolinhas da mesma cor, pode ser o verdezinho que está sendo usado nas quintas`,
     agentSummary: 'Unificação de todas as notas da escala e dos acordes no verde esmeralda vibrante das quintas (fill-emerald-600 com borda stroke-emerald-300), mantendo o destaque visual obrigatório da tônica em âmbar dourado com halo luminoso, simplificando e limpando a legenda e a leitura visual no braço.'
+  },
+  {
+    id: 23,
+    title: 'Efeito Sutil de Escala no Hover e Botão para Colorir Intervalos',
+    badge: 'Interatividade & UI',
+    userPrompt: `Sobre o efeito ao passar o mouse por sobre a nota no braço, pode só aplicar um pequeno efeito de scala, sem crescer muito
+Vamos manter o esquema de cores opicional, pode ter um botão mostrar todos os intervalos, e ai, se ativo, ele apresenta várias cores dependendo do intervalo.`,
+    agentSummary: 'Ajuste do hover para uma expansão sutil e suave de 8% (scale-108) com ponto de origem centralizado no círculo da nota (transformOrigin). Adição do botão "Colorir por Intervalo" no topo do braço: quando desativado (padrão), exibe a paleta verde esmeralda unificada com tônica dourada; quando ativado, expande para a paleta multicolorida por intervalo (2ª, 3ª, 4ª, 5ª, 6ª, 7ª) e alterna dinamicamente a legenda.'
   }
 ];
 

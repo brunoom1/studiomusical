@@ -161,6 +161,13 @@ eu inicie um projeto no git suba os arquivos coloque os .gitignore nas pastas qu
     userPrompt: `Vamos retirar a opção de braço vertical
 na página planejamento, gostaria de deixar um histórico das mensagens que trocamos. Deixe os prompts que eu coloquei completos. E suas respostas, pode resumir`,
     agentSummary: 'Remoção da alternância vertical, consolidando a visualização horizontal ergonômica, e criação desta seção completa de histórico com todos os prompts do usuário na íntegra e resumos das ações do agente.'
+  },
+  {
+    id: 19,
+    title: 'Cifras Dinâmicas de Acordo com a Quantidade de Cordas Selecionada',
+    badge: 'Teoria & UI',
+    userPrompt: `as cifras devem ser mostradas de acordo com a quantidade de cordas que foi selecionada`,
+    agentSummary: 'Adaptação do motor harmônico de acordes e do componente de diagrama de caixas (ChordDiagram) para 4, 6 e 7 cordas. Implementados shapes dedicados para Cavaquinho/4 cordas, violão tradicional (6 cordas) e violão de 7 cordas com baixarias de choro. Os diagramas SVG, o braço interativo e a síntese polifônica de áudio agora se adaptam com precisão ao instrumento selecionado.'
   }
 ];
 

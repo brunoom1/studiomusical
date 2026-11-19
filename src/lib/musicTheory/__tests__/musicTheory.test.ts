@@ -94,6 +94,32 @@ describe('Motor de Teoria Musical - Studio Musical', () => {
     expect(fDimShapes.length).toBeGreaterThan(0);
   });
 
+  it('deve gerar cifras/shapes de acordo com a quantidade de cordas selecionada (4, 6 e 7 cordas)', () => {
+    // 4 cordas (ex: Cavaquinho / 4 cordas)
+    const shapes4 = generateShapesForChord('C', 'major7', 4);
+    expect(shapes4.length).toBeGreaterThan(0);
+    shapes4.forEach(shape => {
+      expect(shape.frets.length).toBe(4);
+      expect(shape.stringCount).toBe(4);
+    });
+
+    // 6 cordas (Violão padrão)
+    const shapes6 = generateShapesForChord('C', 'major7', 6);
+    expect(shapes6.length).toBeGreaterThan(0);
+    shapes6.forEach(shape => {
+      expect(shape.frets.length).toBe(6);
+      expect(shape.stringCount).toBe(6);
+    });
+
+    // 7 cordas (Violão 7 cordas)
+    const shapes7 = generateShapesForChord('C', 'major7', 7);
+    expect(shapes7.length).toBeGreaterThan(0);
+    shapes7.forEach(shape => {
+      expect(shape.frets.length).toBe(7);
+      expect(shape.stringCount).toBe(7);
+    });
+  });
+
   it('deve gerar markers de arpejos para tétrades', () => {
     const markers = getArpeggioFretboardMarkers('F', 'major7', 6);
     expect(markers.length).toBeGreaterThan(0);

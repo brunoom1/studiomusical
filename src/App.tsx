@@ -56,6 +56,7 @@ export const App: React.FC = () => {
   // Manipular alteração de contagem de cordas
   const handleStringCountChange = (newCount: StringCount) => {
     setStringCount(newCount);
+    setSelectedChordShapeIndex(0);
     const defaultPreset = TUNING_PRESETS.find(p => p.stringCount === newCount) || TUNING_PRESETS[0];
     setCurrentTuning(defaultPreset.strings);
   };
@@ -85,14 +86,14 @@ export const App: React.FC = () => {
 
   const scaleNotes = getScaleNotes(selectedRoot, selectedScale);
 
-  // Cálculo dos shapes de Acordes para a tônica e fórmula selecionadas
-  const chordShapes = generateShapesForChord(selectedRoot, selectedChordFormula.id);
+  // Cálculo dos shapes de Acordes para a tônica e fórmula selecionadas de acordo com a contagem de cordas
+  const chordShapes = generateShapesForChord(selectedRoot, selectedChordFormula.id, stringCount);
   const activeChordShape: ChordShape | undefined = chordShapes[selectedChordShapeIndex] || chordShapes[0];
 
   // Marcadores do acorde ativo no braço
   const chordMarkers = activeChordShape
     ? activeChordShape.frets.map((fret, sIndex) => {
-        if (fret === null) return null;
+        if (fret === null || fret === undefined || sIndex >= currentTuning.length) return null;
         const { note, frequency } = getNoteAtFret(sIndex, fret, currentTuning);
         return {
           stringIndex: sIndex,
@@ -308,6 +309,8 @@ export const App: React.FC = () => {
                     displayMode={displayMode}
                     isSelected={selectedChordShapeIndex === idx}
                     onSelect={() => setSelectedChordShapeIndex(idx)}
+                    stringCount={stringCount}
+                    tuning={currentTuning}
                   />
                 ))}
               </div>

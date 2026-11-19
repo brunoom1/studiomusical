@@ -99,6 +99,7 @@ export interface ChordShape {
   barres?: { fret: number; fromString: number; toString: number }[];
   description?: string;
   isIdiomaticForSamba?: boolean;
+  stringCount?: StringCount;
 }
 
 export interface ArpeggioShape {

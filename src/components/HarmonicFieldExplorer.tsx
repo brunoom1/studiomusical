@@ -8,6 +8,7 @@ import { getArpeggioFretboardMarkers } from '../lib/musicTheory/arpeggios';
 import { SCALES_DATABASE, getScaleFretboardMarkers } from '../lib/musicTheory/scales';
 import { Volume2, Play, Music, Sparkles } from 'lucide-react';
 import { guitarAudio } from '../lib/audio/guitarSynth';
+import { getNoteAtFret } from '../lib/musicTheory/fretboard';
 
 interface HarmonicFieldExplorerProps {
   selectedRoot: NoteName;
@@ -33,8 +34,8 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
   const harmonicField = getHarmonicField(selectedRoot, fieldType);
   const activeDegree = harmonicField.degrees[selectedDegreeIndex] || harmonicField.degrees[0];
 
-  // Shapes de acordes para o grau selecionado
-  const degreeShapes = generateShapesForChord(activeDegree.chordRoot, activeDegree.formulaId);
+  // Shapes de acordes para o grau selecionado de acordo com a contagem de cordas
+  const degreeShapes = generateShapesForChord(activeDegree.chordRoot, activeDegree.formulaId, stringCount);
 
   // Escala correspondente ao grau
   const degreeScale = SCALES_DATABASE.find(s => s.id === activeDegree.scaleId) || SCALES_DATABASE[0];
@@ -51,16 +52,16 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
     : getArpeggioFretboardMarkers(activeDegree.chordRoot, activeDegree.formulaId, tuning || stringCount, { min: 0, max: 15 });
 
   const handlePlayDegreeChord = (degree: HarmonicDegree) => {
-    const shapes = generateShapesForChord(degree.chordRoot, degree.formulaId);
+    const shapes = generateShapesForChord(degree.chordRoot, degree.formulaId, stringCount);
     if (shapes.length > 0) {
       const shape = shapes[0];
-      // Toca o acorde
       const frets = shape.frets;
       const freqs: number[] = [];
-      for (let s = 5; s >= 0; s--) {
+      const numStrings = frets.length;
+      for (let s = numStrings - 1; s >= 0; s--) {
         const fret = frets[s];
-        if (fret !== null) {
-          const { frequency } = (window as any).getNoteAtFret ? (window as any).getNoteAtFret(s, fret, 6) : { frequency: 220 };
+        if (fret !== null && fret !== undefined) {
+          const { frequency } = getNoteAtFret(s, fret, tuning || stringCount);
           freqs.push(frequency);
         }
       }
@@ -237,6 +238,8 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
                   shape={shape}
                   notation={notation}
                   displayMode={displayMode}
+                  stringCount={stringCount}
+                  tuning={tuning}
                 />
               ))}
             </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NoteName, NoteNotation, DisplayMode, StringCount, ViewOrientation, SambaChoroProgression, StringTuning } from '../types/music';
 import { SAMBA_CHORO_PRESETS } from '../lib/musicTheory/sambaChoroPresets';
 import { ChordDiagram } from './ChordDiagram';
+import { adaptShapeToStringCount } from '../lib/musicTheory/chords';
 import { Fretboard } from './Fretboard';
 import { Sparkles, Play, Pause, Music, HelpCircle, ArrowRight } from 'lucide-react';
 import { guitarAudio } from '../lib/audio/guitarSynth';
@@ -30,27 +31,29 @@ export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
   const currentPreset = availablePresets[activePresetIndex] || availablePresets[0] || SAMBA_CHORO_PRESETS[0];
   const activeStep = currentPreset.steps[activeStepIndex] || currentPreset.steps[0];
 
-  // Gera markers para o braço com as notas do shape do passo ativo
-  const activeShapeFrets = activeStep.shape.frets;
-  const activeStepMarkers = activeShapeFrets.map((fret, sIndex) => {
-    if (fret === null) return null;
-    const { note, frequency } = getNoteAtFret(sIndex, fret, 6);
+  // Gera markers para o braço com as notas do shape do passo ativo adaptado para o número de cordas
+  const currentStepShape = adaptShapeToStringCount(activeStep.shape, stringCount);
+  const activeStepMarkers = currentStepShape.frets.map((fret, sIndex) => {
+    if (fret === null || fret === undefined || (tuning && sIndex >= tuning.length)) return null;
+    const { note, frequency } = getNoteAtFret(sIndex, fret, tuning || stringCount);
     return {
       stringIndex: sIndex,
       fret,
       note,
-      interval: (fret === activeStep.shape.baseFret ? '1' : '3') as any,
-      isRoot: sIndex === 5 || sIndex === 4, // bordão geralmente tônica
+      interval: (fret === currentStepShape.baseFret ? '1' : '3') as any,
+      isRoot: sIndex === (stringCount - 1) || sIndex === (stringCount - 2), // bordões geralmente tônica
       frequency
     };
   }).filter((m): m is NonNullable<typeof m> => m !== null);
 
   const handlePlayStepChord = (shape: typeof activeStep.shape) => {
+    const adapted = adaptShapeToStringCount(shape, stringCount);
     const frequencies: number[] = [];
-    for (let s = 5; s >= 0; s--) {
-      const fret = shape.frets[s];
-      if (fret !== null) {
-        const { frequency } = getNoteAtFret(s, fret, 6);
+    const numStrings = adapted.frets.length;
+    for (let s = numStrings - 1; s >= 0; s--) {
+      const fret = adapted.frets[s];
+      if (fret !== null && fret !== undefined) {
+        const { frequency } = getNoteAtFret(s, fret, tuning || stringCount);
         frequencies.push(frequency);
       }
     }
@@ -215,10 +218,12 @@ export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
                 {/* Mini Diagrama de Acorde */}
                 <div className="my-2">
                   <ChordDiagram
-                    shape={step.shape}
+                    shape={adaptShapeToStringCount(step.shape, stringCount)}
                     notation={notation}
                     displayMode={displayMode}
                     isSelected={isStepActive}
+                    stringCount={stringCount}
+                    tuning={tuning}
                   />
                 </div>
 

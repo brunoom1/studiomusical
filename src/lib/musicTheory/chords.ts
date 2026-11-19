@@ -1,5 +1,6 @@
 import { ChordFormula, ChordShape, NoteName, IntervalType, StringCount, StringTuning } from '../../types/music';
 import { transposeNote, getNoteIndex, resolveTuning } from './fretboard';
+import { getFixedChordShapes } from './chordCatalog';
 
 export const CHORD_FORMULAS: ChordFormula[] = [
   // Tríades
@@ -1063,13 +1064,15 @@ export function generateShapesForChord(
     ? (stringCountOrTuning.length as StringCount)
     : stringCountOrTuning;
 
-  // 1. Shapes especificamente modelados para a contagem de cordas selecionada
+  // 1. Dicionário Fixo de Acordes (shapes consagrados de cancioneiro/método)
+  const fixedShapes = getFixedChordShapes(root, formulaId, targetStringCount);
+
+  // 2. Shapes transponíveis modelados para a contagem de cordas selecionada
   let matchedTransposables = TRANSPOSABLE_SHAPES.filter(
     t => t.formulaId === formulaId && (t.stringCount ?? 6) === targetStringCount
   );
 
-  // 2. Se o usuário estiver no Violão de 7 cordas, também inclui todos os shapes tradicionais
-  // de 6 cordas adaptados para 7 cordas (com a 7ª corda abafada/null no bordão grave)
+  // Se o usuário estiver no Violão de 7 cordas, também inclui shapes tradicionais de 6 cordas adaptados
   if (targetStringCount === 7) {
     const sixStringTransposables = TRANSPOSABLE_SHAPES.filter(
       t => t.formulaId === formulaId && (t.stringCount ?? 6) === 6
@@ -1086,8 +1089,7 @@ export function generateShapesForChord(
     }
   }
 
-  // 3. Fallback: se por algum motivo não houver shape específico para 4 cordas na fórmula,
-  // adapta os shapes de 6 cordas extraindo as 4 primeiras cordas
+  // Fallback: se não houver shape específico para 4 cordas na fórmula, adapta de 6 cordas
   if (targetStringCount === 4 && matchedTransposables.length === 0) {
     const sixStringTransposables = TRANSPOSABLE_SHAPES.filter(
       t => t.formulaId === formulaId && (t.stringCount ?? 6) === 6
@@ -1105,7 +1107,7 @@ export function generateShapesForChord(
     }
   }
 
-  const shapes: ChordShape[] = [];
+  const generatedShapes: ChordShape[] = [];
 
   for (const trans of matchedTransposables) {
     const rootFret = findRootFretOnString(root, trans.rootString, targetStringCount);
@@ -1126,19 +1128,27 @@ export function generateShapesForChord(
     const nonZeroFrets = frets.filter((f): f is number => f !== null && f > 0);
     const minFret = nonZeroFrets.length > 0 ? Math.min(...nonZeroFrets) : 1;
 
-    shapes.push({
-      id: `${trans.id}_${root}`,
-      name: `${root}${formula.suffix} - ${trans.name}`,
-      chordSymbol: `${root}${formula.suffix}`,
-      root,
-      baseFret: minFret > 0 && isFinite(minFret) ? minFret : 1,
-      frets,
-      fingers: trans.fingers,
-      isIdiomaticForSamba: trans.isIdiomaticForSamba,
-      stringCount: targetStringCount,
-      description: formula.description
-    });
+    // Evita duplicatas se as casas forem idênticas a um shape fixo já existente
+    const isDuplicate = fixedShapes.some(fixed => 
+      fixed.frets.length === frets.length && fixed.frets.every((val, i) => val === frets[i])
+    );
+
+    if (!isDuplicate) {
+      generatedShapes.push({
+        id: `${trans.id}_${root}`,
+        name: `${root}${formula.suffix} - ${trans.name}`,
+        chordSymbol: `${root}${formula.suffix}`,
+        root,
+        baseFret: minFret > 0 && isFinite(minFret) ? minFret : 1,
+        frets,
+        fingers: trans.fingers,
+        isIdiomaticForSamba: trans.isIdiomaticForSamba,
+        stringCount: targetStringCount,
+        description: formula.description
+      });
+    }
   }
 
-  return shapes;
+  // Retorna os shapes fixos primeiro, seguidos pelas variações transponíveis calculadas
+  return [...fixedShapes, ...generatedShapes];
 }

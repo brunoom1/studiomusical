@@ -168,6 +168,13 @@ na página planejamento, gostaria de deixar um histórico das mensagens que troc
     badge: 'Teoria & UI',
     userPrompt: `as cifras devem ser mostradas de acordo com a quantidade de cordas que foi selecionada`,
     agentSummary: 'Adaptação do motor harmônico de acordes e do componente de diagrama de caixas (ChordDiagram) para 4, 6 e 7 cordas. Implementados shapes dedicados para Cavaquinho/4 cordas, violão tradicional (6 cordas) e violão de 7 cordas com baixarias de choro. Os diagramas SVG, o braço interativo e a síntese polifônica de áudio agora se adaptam com precisão ao instrumento selecionado.'
+  },
+  {
+    id: 20,
+    title: 'Dicionário e Catálogo de Acordes Fixos para 4, 6 e 7 Cordas',
+    badge: 'Catálogo & Harmonia',
+    userPrompt: `quero ter uma dicionário de acordes fixos para 4 6 e 7 cordas, pesquise na internet, faça um catálogo de acorde para cada um dos filtros que temos para que as cifras estejam mais de acordo com o que já temos estabelecido hoje`,
+    agentSummary: 'Criação do módulo src/lib/musicTheory/chordCatalog.ts com um catálogo completo de posições fixas, reais e consagradas para todos os filtros (tônicas, tríades, tétrades 7/7M, 7(13), 7(9), 7(b9), m7, m7b5, dim7, 6). Os acordes cobrem violão tradicional de 6 cordas (com posições abertas e dedilhados clássicos), cavaquinho em 4 cordas (D-G-B-D com formas abertas e pestanas do samba) e violão de 7 cordas (com baixarias na 7ª corda em C2 no estilo de Dino 7 Cordas), incluindo resolução de enarmonia e priorização de exibição sobre os cálculos transponíveis.'
   }
 ];
 

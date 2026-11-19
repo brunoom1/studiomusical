@@ -120,6 +120,28 @@ describe('Motor de Teoria Musical - Studio Musical', () => {
     });
   });
 
+  it('deve consultar o catálogo/dicionário de acordes fixos para 4, 6 e 7 cordas com enarmonia', () => {
+    // C Maior Aberto no Violão 6 cordas
+    const c6Fixed = generateShapesForChord('C', 'major_triad', 6);
+    expect(c6Fixed.some(s => s.name.includes('Aberto'))).toBe(true);
+    expect(c6Fixed[0].frets).toEqual([0, 1, 0, 2, 3, null]);
+
+    // G Maior no Cavaquinho (4 cordas soltas)
+    const g4Fixed = generateShapesForChord('G', 'major_triad', 4);
+    expect(g4Fixed.some(s => s.frets.every(f => f === 0))).toBe(true);
+
+    // C7 com baixaria na 7ª corda solta (C2) no 7 cordas
+    const c7Fixed = generateShapesForChord('C', 'dominant7', 7);
+    expect(c7Fixed.some(s => s.name.includes('7ª corda'))).toBe(true);
+    // 7ª corda é o último índice no array frets (índice 6)
+    expect(c7Fixed[0].frets[6]).toBe(0);
+
+    // Enarmonia (Db -> C#)
+    const dbFixed = generateShapesForChord('Db', 'major_triad', 6);
+    expect(dbFixed.length).toBeGreaterThan(0);
+    expect(dbFixed[0].chordSymbol).toBe('Db');
+  });
+
   it('deve gerar markers de arpejos para tétrades', () => {
     const markers = getArpeggioFretboardMarkers('F', 'major7', 6);
     expect(markers.length).toBeGreaterThan(0);

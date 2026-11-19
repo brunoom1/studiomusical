@@ -34,7 +34,7 @@ export const App: React.FC = () => {
   const [selectedRoot, setSelectedRoot] = useState<NoteName>('F'); // Default em F (Samba e Choro)
   const [selectedScale, setSelectedScale] = useState<ScaleDefinition>(SCALES_DATABASE[0]);
   const [selectedChordFormula, setSelectedChordFormula] = useState<ChordFormula>(CHORD_FORMULAS[4]); // 7M
-  const [selectedCagedShape, setSelectedCagedShape] = useState<string>('all');
+  const [selectedCagedShape, setSelectedCagedShape] = useState<string>('shape_e');
   const [selectedChordShapeIndex, setSelectedChordShapeIndex] = useState<number>(0);
 
   // Configuração de Cordas e Afinação
@@ -67,10 +67,8 @@ export const App: React.FC = () => {
     guitarAudio.setMuted(muted);
   };
 
-  // Cálculo dos marcadores de Escala para o braço com a afinação ativa
-  const scaleFretRange = selectedCagedShape === 'all' 
-    ? undefined 
-    : getCagedFretRange(selectedRoot, selectedCagedShape, currentTuning);
+  // Cálculo dos marcadores de Escala para o braço com a posição/shape CAGED ativa
+  const scaleFretRange = getCagedFretRange(selectedRoot, selectedCagedShape, currentTuning);
 
   const scaleMarkers = getScaleFretboardMarkers(
     selectedRoot, 

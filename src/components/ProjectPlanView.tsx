@@ -204,6 +204,13 @@ Vamos manter o esquema de cores opicional, pode ter um botão mostrar todos os i
     badge: 'Correção de Bug & Braço',
     userPrompt: `Dependendo do tom fundamental que escolhemos as notas da corda solta ficam bugadas, aparecendo as vezes notas que não deveriam estar ali`,
     agentSummary: 'Identificação e resolução de 3 causas raízes: 1) No motor de escalas e arpejos, migrada a verificação para mapeamento exato por Pitch Class (0 a 11) com resolução enarmônica fiel à escala (ex: Bb em Fá maior e não A#); 2) No braço interativo, criada coluna dedicada de tarraxas (AFIN.) e zona independente para cordas soltas (SOLTA), garantindo que apenas cordas com notas pertencentes ao tom sejam marcadas e exibindo o indicador ✕ em cordas mutadas de acordes, eliminando sobreposições e notas "fantasmas"; 3) Parametrização dinâmica do range de casas dos shapes CAGED de acordo com a tônica.'
+  },
+  {
+    id: 25,
+    title: 'Foco nos Shapes CAGED e Remoção de Todas as Posições',
+    badge: 'Filtros & CAGED',
+    userPrompt: `Vamos retirar a opção de todas as posições no shape, o erro que apresentei anteriormente é por que são mostradas todas opções de shape no braço. Vamos escolher a de E como primeira.`,
+    agentSummary: 'Remoção da opção "Braço Inteiro (Todas as Posições)" no seletor de shapes de escala, definindo o Shape 1 (Forma de E com tônica na 6ª corda) como o padrão inicial e prioritário. O braço agora exibe estritamente o bloco harmônico do shape selecionado posicionado dinamicamente a partir da tônica, eliminando notas de outras regiões do braço e cordas soltas fora da digitação.'
   }
 ];
 

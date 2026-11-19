@@ -191,7 +191,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               onChange={e => setSelectedCagedShape(e.target.value)}
               className="w-full bg-stone-800 border border-stone-700 text-stone-100 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
             >
-              <option value="all">Braço Inteiro (Todas as Posições)</option>
               {CAGED_SHAPES_CONFIG.map(shape => (
                 <option key={shape.id} value={shape.id}>
                   {shape.name}

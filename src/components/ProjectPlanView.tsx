@@ -182,6 +182,13 @@ na página planejamento, gostaria de deixar um histórico das mensagens que troc
     badge: 'Ergonomia & UI',
     userPrompt: `No braço interativo, as notas cinzas parecem que não são para tocar. coloque um cor diferente no lugar`,
     agentSummary: 'Eliminação completa dos tons cinzas que causavam a impressão de notas desativadas. Introdução de uma paleta harmônica viva e iluminada: Laranja Coral para 2ª/9ª, Azul Turquesa para 4ª/11ª, Rosa Carmim para 6ª/13ª e Azul Real para extensões, mantendo o Dourado para Tônica, Azul Céu para Terças, Verde Esmeralda para Quintas e Púrpura para Sétimas, além de atualizar a legenda superior e o cálculo dinâmico de intervalos nos acordes.'
+  },
+  {
+    id: 22,
+    title: 'Unificação Visual das Bolinhas no Verde das Quintas',
+    badge: 'Design & Visual',
+    userPrompt: `vamos colocar todas as bolinhas da mesma cor, pode ser o verdezinho que está sendo usado nas quintas`,
+    agentSummary: 'Unificação de todas as notas da escala e dos acordes no verde esmeralda vibrante das quintas (fill-emerald-600 com borda stroke-emerald-300), mantendo o destaque visual obrigatório da tônica em âmbar dourado com halo luminoso, simplificando e limpando a legenda e a leitura visual no braço.'
   }
 ];
 

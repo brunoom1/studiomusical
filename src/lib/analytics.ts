@@ -39,8 +39,15 @@ export function initGA(measurementId: string = DEFAULT_GA_ID) {
 }
 
 export function trackPageView(title: string, path: string) {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (typeof window === 'undefined') return;
+  if (window.gtag) {
     window.gtag('event', 'page_view', {
+      page_title: title,
+      page_path: path
+    });
+  } else if (window.dataLayer) {
+    window.dataLayer.push({
+      event: 'page_view',
       page_title: title,
       page_path: path
     });
@@ -48,8 +55,16 @@ export function trackPageView(title: string, path: string) {
 }
 
 export function trackEvent(action: string, category: string, label?: string, value?: number) {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (typeof window === 'undefined') return;
+  if (window.gtag) {
     window.gtag('event', action, {
+      event_category: category,
+      event_label: label,
+      value: value
+    });
+  } else if (window.dataLayer) {
+    window.dataLayer.push({
+      event: action,
       event_category: category,
       event_label: label,
       value: value

@@ -175,6 +175,13 @@ na página planejamento, gostaria de deixar um histórico das mensagens que troc
     badge: 'Catálogo & Harmonia',
     userPrompt: `quero ter uma dicionário de acordes fixos para 4 6 e 7 cordas, pesquise na internet, faça um catálogo de acorde para cada um dos filtros que temos para que as cifras estejam mais de acordo com o que já temos estabelecido hoje`,
     agentSummary: 'Criação do módulo src/lib/musicTheory/chordCatalog.ts com um catálogo completo de posições fixas, reais e consagradas para todos os filtros (tônicas, tríades, tétrades 7/7M, 7(13), 7(9), 7(b9), m7, m7b5, dim7, 6). Os acordes cobrem violão tradicional de 6 cordas (com posições abertas e dedilhados clássicos), cavaquinho em 4 cordas (D-G-B-D com formas abertas e pestanas do samba) e violão de 7 cordas (com baixarias na 7ª corda em C2 no estilo de Dino 7 Cordas), incluindo resolução de enarmonia e priorização de exibição sobre os cálculos transponíveis.'
+  },
+  {
+    id: 21,
+    title: 'Substituição das Notas Cinzas no Braço por Cores Vibrantes',
+    badge: 'Ergonomia & UI',
+    userPrompt: `No braço interativo, as notas cinzas parecem que não são para tocar. coloque um cor diferente no lugar`,
+    agentSummary: 'Eliminação completa dos tons cinzas que causavam a impressão de notas desativadas. Introdução de uma paleta harmônica viva e iluminada: Laranja Coral para 2ª/9ª, Azul Turquesa para 4ª/11ª, Rosa Carmim para 6ª/13ª e Azul Real para extensões, mantendo o Dourado para Tônica, Azul Céu para Terças, Verde Esmeralda para Quintas e Púrpura para Sétimas, além de atualizar a legenda superior e o cálculo dinâmico de intervalos nos acordes.'
   }
 ];
 

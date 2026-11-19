@@ -6,7 +6,7 @@ import { adaptShapeToStringCount } from '../lib/musicTheory/chords';
 import { Fretboard } from './Fretboard';
 import { Sparkles, Play, Pause, Music, HelpCircle, ArrowRight } from 'lucide-react';
 import { guitarAudio } from '../lib/audio/guitarSynth';
-import { getNoteAtFret } from '../lib/musicTheory/fretboard';
+import { getNoteAtFret, identifyInterval } from '../lib/musicTheory/fretboard';
 
 interface SambaChoroViewProps {
   notation: NoteNotation;
@@ -36,12 +36,13 @@ export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
   const activeStepMarkers = currentStepShape.frets.map((fret, sIndex) => {
     if (fret === null || fret === undefined || (tuning && sIndex >= tuning.length)) return null;
     const { note, frequency } = getNoteAtFret(sIndex, fret, tuning || stringCount);
+    const interval = identifyInterval(activeStep.shape.root, note);
     return {
       stringIndex: sIndex,
       fret,
       note,
-      interval: (fret === currentStepShape.baseFret ? '1' : '3') as any,
-      isRoot: sIndex === (stringCount - 1) || sIndex === (stringCount - 2), // bordões geralmente tônica
+      interval,
+      isRoot: note === activeStep.shape.root || interval === '1',
       frequency
     };
   }).filter((m): m is NonNullable<typeof m> => m !== null);

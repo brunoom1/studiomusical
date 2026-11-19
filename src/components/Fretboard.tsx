@@ -70,7 +70,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
     return marker.note;
   };
 
-  // Helper para cor do marcador
+  // Helper para cor do marcador (cores vibrantes e musicais para destacar todas as notas tocáveis)
   const getMarkerColor = (marker: FretMarker) => {
     if (marker.isRoot || marker.note === highlightedRoot) {
       return {
@@ -81,36 +81,66 @@ export const Fretboard: React.FC<FretboardProps> = ({
       };
     }
     const interval = marker.interval;
+    // Terças (3M / 3m) - Azul Céu
     if (interval === '3' || interval === 'b3') {
       return {
-        bg: 'fill-sky-600',
-        stroke: 'stroke-sky-300',
-        text: 'fill-white font-bold',
-        glow: 'drop-shadow-[0_0_4px_rgba(56,189,248,0.5)]'
+        bg: 'fill-sky-500',
+        stroke: 'stroke-sky-200',
+        text: 'fill-stone-950 font-bold',
+        glow: 'drop-shadow-[0_0_5px_rgba(56,189,248,0.6)]'
       };
     }
+    // Quintas (5J / 5b / #5) - Verde Esmeralda
     if (interval === '5' || interval === 'b5' || interval === '#5') {
       return {
-        bg: 'fill-emerald-600',
-        stroke: 'stroke-emerald-300',
-        text: 'fill-white font-bold',
-        glow: 'drop-shadow-[0_0_4px_rgba(52,211,153,0.5)]'
+        bg: 'fill-emerald-500',
+        stroke: 'stroke-emerald-200',
+        text: 'fill-stone-950 font-bold',
+        glow: 'drop-shadow-[0_0_5px_rgba(52,211,153,0.6)]'
       };
     }
+    // Sétimas (7 / 7M / bb7) - Púrpura / Violeta
     if (interval === '7' || interval === 'b7' || interval === 'bb7') {
       return {
-        bg: 'fill-purple-600',
-        stroke: 'stroke-purple-300',
+        bg: 'fill-purple-500',
+        stroke: 'stroke-purple-200',
         text: 'fill-white font-bold',
-        glow: 'drop-shadow-[0_0_4px_rgba(192,132,252,0.5)]'
+        glow: 'drop-shadow-[0_0_5px_rgba(192,132,252,0.6)]'
       };
     }
-    // Tensões (9, 11, 13)
+    // Segundas e Nonas (2, b2, 9, b9, #9) - Laranja Coral
+    if (interval === '2' || interval === 'b2' || interval === '9' || interval === 'b9' || interval === '#9') {
+      return {
+        bg: 'fill-orange-500',
+        stroke: 'stroke-orange-200',
+        text: 'fill-stone-950 font-bold',
+        glow: 'drop-shadow-[0_0_5px_rgba(249,115,22,0.6)]'
+      };
+    }
+    // Quartas e Décimas-primeiras (4, 11, #11) - Azul Turquesa / Ciano
+    if (interval === '4' || interval === '11' || interval === '#11') {
+      return {
+        bg: 'fill-teal-500',
+        stroke: 'stroke-teal-200',
+        text: 'fill-stone-950 font-bold',
+        glow: 'drop-shadow-[0_0_5px_rgba(20,184,166,0.6)]'
+      };
+    }
+    // Sextas e Décimas-terceiras (6, b13, 13) - Rosa Carmim / Fúcsia
+    if (interval === '6' || interval === 'b13' || interval === '13') {
+      return {
+        bg: 'fill-rose-500',
+        stroke: 'stroke-rose-200',
+        text: 'fill-white font-bold',
+        glow: 'drop-shadow-[0_0_5px_rgba(244,63,94,0.6)]'
+      };
+    }
+    // Demais notas ativas na escala ou acorde (Azul Real luminoso - nunca cinza)
     return {
-      bg: 'fill-stone-700',
-      stroke: 'stroke-stone-400',
-      text: 'fill-stone-100 font-semibold',
-      glow: ''
+      bg: 'fill-blue-500',
+      stroke: 'stroke-blue-200',
+      text: 'fill-white font-bold',
+      glow: 'drop-shadow-[0_0_5px_rgba(59,130,246,0.6)]'
     };
   };
 
@@ -123,25 +153,37 @@ export const Fretboard: React.FC<FretboardProps> = ({
     <div className="w-full bg-stone-950/70 p-4 rounded-2xl border border-stone-800 shadow-xl overflow-x-auto">
       {/* Legenda rápida */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3 text-xs text-stone-400">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-full bg-amber-500 border border-amber-300 inline-block shadow-sm"></span>
-            <span className="text-stone-300 font-medium">Tônica</span>
+            <span className="text-stone-200 font-semibold">Tônica (1)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-sky-600 border border-sky-300 inline-block"></span>
+            <span className="w-3 h-3 rounded-full bg-orange-500 border border-orange-200 inline-block"></span>
+            <span>2ª / 9ª</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-sky-500 border border-sky-200 inline-block"></span>
             <span>Terças (3M / 3m)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-emerald-600 border border-emerald-300 inline-block"></span>
+            <span className="w-3 h-3 rounded-full bg-teal-500 border border-teal-200 inline-block"></span>
+            <span>4ª / 11ª</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-200 inline-block"></span>
             <span>Quintas (5J / 5b)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-purple-600 border border-purple-300 inline-block"></span>
-            <span>Sétimas (7 / 7M / dim)</span>
+            <span className="w-3 h-3 rounded-full bg-rose-500 border border-rose-200 inline-block"></span>
+            <span>6ª / 13ª</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-purple-500 border border-purple-200 inline-block"></span>
+            <span>Sétimas (7 / 7M)</span>
           </div>
         </div>
-        <span className="text-[11px] text-stone-500 italic">
+        <span className="text-[11px] text-amber-300/90 font-medium">
           💡 Clique em qualquer nota no braço para ouvir o som
         </span>
       </div>

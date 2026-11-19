@@ -25,7 +25,7 @@ import { SambaChoroView } from './components/SambaChoroView';
 import { ProjectPlanView } from './components/ProjectPlanView';
 import { TuningModal } from './components/TuningModal';
 import { guitarAudio } from './lib/audio/guitarSynth';
-import { getNoteAtFret } from './lib/musicTheory/fretboard';
+import { getNoteAtFret, identifyInterval } from './lib/musicTheory/fretboard';
 import { Play, Info, Layers } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -90,17 +90,18 @@ export const App: React.FC = () => {
   const chordShapes = generateShapesForChord(selectedRoot, selectedChordFormula.id, stringCount);
   const activeChordShape: ChordShape | undefined = chordShapes[selectedChordShapeIndex] || chordShapes[0];
 
-  // Marcadores do acorde ativo no braço
+  // Marcadores do acorde ativo no braço com cálculo exato de intervalo e tônica
   const chordMarkers = activeChordShape
     ? activeChordShape.frets.map((fret, sIndex) => {
         if (fret === null || fret === undefined || sIndex >= currentTuning.length) return null;
         const { note, frequency } = getNoteAtFret(sIndex, fret, currentTuning);
+        const interval = identifyInterval(selectedRoot, note);
         return {
           stringIndex: sIndex,
           fret,
           note,
-          interval: (fret === activeChordShape.baseFret ? '1' : '3') as any,
-          isRoot: note === selectedRoot,
+          interval,
+          isRoot: note === selectedRoot || interval === '1',
           frequency
         };
       }).filter((m): m is NonNullable<typeof m> => m !== null)

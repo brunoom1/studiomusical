@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { trackPageView, trackEvent } from './lib/analytics';
 import { 
   ActiveTab, 
   NoteName, 
@@ -47,6 +48,11 @@ export const App: React.FC = () => {
   const [notation, setNotation] = useState<NoteNotation>('anglo');
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  // Rastreamento de abas no Google Analytics
+  useEffect(() => {
+    trackPageView(`Cordas.com - ${activeTab}`, `/${activeTab}`);
+  }, [activeTab]);
 
   // Manipular alteração de contagem de cordas
   const handleStringCountChange = (newCount: StringCount) => {
@@ -111,6 +117,7 @@ export const App: React.FC = () => {
   const handlePlayCurrent = () => {
     if (isPlaying) return;
     setIsPlaying(true);
+    trackEvent('play_audio', 'interaction', activeTab);
 
     if (activeTab === 'scales') {
       const notesToPlay = [...scaleMarkers]

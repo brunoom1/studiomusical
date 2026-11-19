@@ -40,6 +40,7 @@ jobs:
       - name: Build project for GitHub Pages
         env:
           GITHUB_PAGES: 'true'
+          VITE_GA_ID: ${{ secrets.VITE_GA_ID || vars.VITE_GA_ID || '' }}
         run: npm run build
 
       - name: Setup Pages

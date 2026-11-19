@@ -148,7 +148,23 @@ export interface SambaChoroProgression {
 }
 
 export type ViewOrientation = 'horizontal' | 'vertical';
-export type StringCount = 6 | 7;
+export type StringCount = 4 | 6 | 7;
 export type DisplayMode = 'notes' | 'intervals' | 'fingers';
 export type NoteNotation = 'anglo' | 'solfege'; // 'C, D, E' vs 'Dó, Ré, Mi'
 export type ActiveTab = 'scales' | 'chords' | 'arpeggios' | 'harmonic_field' | 'samba_choro' | 'plan';
+
+export interface StringTuning {
+  stringNumber: number;
+  openNote: NoteName;
+  octave: number;
+  midiNumber: number;
+  frequency: number;
+}
+
+export interface TuningPreset {
+  id: string;
+  name: string;
+  stringCount: StringCount;
+  description: string;
+  strings: StringTuning[];
+}

@@ -8,12 +8,13 @@ import {
   StringCount, 
   DisplayMode, 
   NoteNotation,
-  ChordShape
+  ChordShape,
+  StringTuning
 } from './types/music';
 import { SCALES_DATABASE, getScaleFretboardMarkers, getScaleNotes, CAGED_SHAPES_CONFIG } from './lib/musicTheory/scales';
 import { CHORD_FORMULAS, generateShapesForChord, getChordNotes } from './lib/musicTheory/chords';
 import { getArpeggioFretboardMarkers } from './lib/musicTheory/arpeggios';
-import { NOTE_TO_SOLFEGE, INTERVALS_INFO } from './lib/musicTheory/constants';
+import { NOTE_TO_SOLFEGE, GUITAR_TUNING_6, TUNING_PRESETS } from './lib/musicTheory/constants';
 import { Header } from './components/Header';
 import { FilterBar } from './components/FilterBar';
 import { Fretboard } from './components/Fretboard';
@@ -21,9 +22,10 @@ import { ChordDiagram } from './components/ChordDiagram';
 import { HarmonicFieldExplorer } from './components/HarmonicFieldExplorer';
 import { SambaChoroView } from './components/SambaChoroView';
 import { ProjectPlanView } from './components/ProjectPlanView';
+import { TuningModal } from './components/TuningModal';
 import { guitarAudio } from './lib/audio/guitarSynth';
 import { getNoteAtFret } from './lib/musicTheory/fretboard';
-import { Sparkles, Music, Layers, GitCommit, Play, Info } from 'lucide-react';
+import { Play, Info, Layers } from 'lucide-react';
 
 export const App: React.FC = () => {
   // Estados principais
@@ -34,13 +36,24 @@ export const App: React.FC = () => {
   const [selectedCagedShape, setSelectedCagedShape] = useState<string>('all');
   const [selectedChordShapeIndex, setSelectedChordShapeIndex] = useState<number>(0);
 
+  // Configuração de Cordas e Afinação
+  const [stringCount, setStringCount] = useState<StringCount>(6);
+  const [currentTuning, setCurrentTuning] = useState<StringTuning[]>(GUITAR_TUNING_6);
+  const [isTunerOpen, setIsTunerOpen] = useState<boolean>(false);
+
   // Preferências visuais e de áudio
   const [orientation, setOrientation] = useState<ViewOrientation>('horizontal');
-  const [stringCount, setStringCount] = useState<StringCount>(6);
   const [displayMode, setDisplayMode] = useState<DisplayMode>('notes');
   const [notation, setNotation] = useState<NoteNotation>('anglo');
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  // Manipular alteração de contagem de cordas
+  const handleStringCountChange = (newCount: StringCount) => {
+    setStringCount(newCount);
+    const defaultPreset = TUNING_PRESETS.find(p => p.stringCount === newCount) || TUNING_PRESETS[0];
+    setCurrentTuning(defaultPreset.strings);
+  };
 
   // Atualiza muting no motor de áudio
   const handleToggleMute = (muted: boolean) => {
@@ -48,20 +61,19 @@ export const App: React.FC = () => {
     guitarAudio.setMuted(muted);
   };
 
-  // Cálculo dos marcadores de Escala para o braço
+  // Cálculo dos marcadores de Escala para o braço com a afinação ativa
   const scaleFretRange = selectedCagedShape === 'all' 
     ? undefined 
     : (() => {
         const found = CAGED_SHAPES_CONFIG.find(c => c.id === selectedCagedShape);
         if (!found) return undefined;
-        // Calcula a casa da tônica para determinar o box
         return { min: found.minFretOffset, max: found.maxFretOffset };
       })();
 
   const scaleMarkers = getScaleFretboardMarkers(
     selectedRoot, 
     selectedScale, 
-    stringCount, 
+    currentTuning, 
     16, 
     scaleFretRange
   );
@@ -76,7 +88,7 @@ export const App: React.FC = () => {
   const chordMarkers = activeChordShape
     ? activeChordShape.frets.map((fret, sIndex) => {
         if (fret === null) return null;
-        const { note, frequency } = getNoteAtFret(sIndex, fret, 6);
+        const { note, frequency } = getNoteAtFret(sIndex, fret, currentTuning);
         return {
           stringIndex: sIndex,
           fret,
@@ -88,11 +100,11 @@ export const App: React.FC = () => {
       }).filter((m): m is NonNullable<typeof m> => m !== null)
     : [];
 
-  // Cálculo dos marcadores de Arpejos
+  // Cálculo dos marcadores de Arpejos com a afinação ativa
   const arpeggioMarkers = getArpeggioFretboardMarkers(
     selectedRoot, 
     selectedChordFormula.id, 
-    stringCount
+    currentTuning
   );
 
   // Reprodução de Áudio
@@ -101,7 +113,6 @@ export const App: React.FC = () => {
     setIsPlaying(true);
 
     if (activeTab === 'scales') {
-      // Toca a escala em ordem crescente e decrescente
       const notesToPlay = [...scaleMarkers]
         .filter((m, i, arr) => arr.findIndex(x => x.fret === m.fret && x.stringIndex === m.stringIndex) === i)
         .sort((a, b) => a.frequency - b.frequency)
@@ -114,20 +125,18 @@ export const App: React.FC = () => {
         setIsPlaying(false);
       }, freqs.length * 200 + 300);
     } else if (activeTab === 'chords' && activeChordShape) {
-      // Toca o acorde com dedilhado
       const frets = activeChordShape.frets;
       const freqs: number[] = [];
-      for (let s = 5; s >= 0; s--) {
+      for (let s = currentTuning.length - 1; s >= 0; s--) {
         const fret = frets[s];
         if (fret !== null) {
-          const { frequency } = getNoteAtFret(s, fret, 6);
+          const { frequency } = getNoteAtFret(s, fret, currentTuning);
           freqs.push(frequency);
         }
       }
       guitarAudio.playChord(freqs, 40);
       window.setTimeout(() => setIsPlaying(false), 900);
     } else if (activeTab === 'arpeggios') {
-      // Toca o arpejo ascendente
       const notesToPlay = [...arpeggioMarkers]
         .sort((a, b) => a.frequency - b.frequency)
         .slice(0, 8);
@@ -148,7 +157,9 @@ export const App: React.FC = () => {
         orientation={orientation}
         setOrientation={setOrientation}
         stringCount={stringCount}
-        setStringCount={setStringCount}
+        setStringCount={handleStringCountChange}
+        currentTuning={currentTuning}
+        onOpenTuner={() => setIsTunerOpen(true)}
         displayMode={displayMode}
         setDisplayMode={setDisplayMode}
         notation={notation}
@@ -188,6 +199,9 @@ export const App: React.FC = () => {
                   </span>
                   <span className="text-xs bg-stone-800 px-2 py-0.5 rounded text-stone-300">
                     {selectedScale.intervals.length} Notas
+                  </span>
+                  <span className="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+                    {stringCount} Cordas ({currentTuning.map(s => s.openNote).join(' ')})
                   </span>
                 </div>
                 <h2 className="text-2xl font-serif font-black text-amber-100 tracking-tight">
@@ -231,6 +245,7 @@ export const App: React.FC = () => {
             <Fretboard
               markers={scaleMarkers}
               stringCount={stringCount}
+              tuning={currentTuning}
               orientation={orientation}
               displayMode={displayMode}
               notation={notation}
@@ -307,6 +322,7 @@ export const App: React.FC = () => {
                 <Fretboard
                   markers={chordMarkers}
                   stringCount={stringCount}
+                  tuning={currentTuning}
                   orientation={orientation}
                   displayMode={displayMode}
                   notation={notation}
@@ -351,6 +367,7 @@ export const App: React.FC = () => {
             <Fretboard
               markers={arpeggioMarkers}
               stringCount={stringCount}
+              tuning={currentTuning}
               orientation={orientation}
               displayMode={displayMode}
               notation={notation}
@@ -367,6 +384,7 @@ export const App: React.FC = () => {
             notation={notation}
             displayMode={displayMode}
             stringCount={stringCount}
+            tuning={currentTuning}
             orientation={orientation}
           />
         )}
@@ -377,6 +395,7 @@ export const App: React.FC = () => {
             notation={notation}
             displayMode={displayMode}
             stringCount={stringCount}
+            tuning={currentTuning}
             orientation={orientation}
           />
         )}
@@ -385,6 +404,17 @@ export const App: React.FC = () => {
         {activeTab === 'plan' && <ProjectPlanView />}
       </main>
 
+      {/* Modal de Configuração de Afinação */}
+      <TuningModal
+        isOpen={isTunerOpen}
+        onClose={() => setIsTunerOpen(false)}
+        stringCount={stringCount}
+        setStringCount={handleStringCountChange}
+        currentTuning={currentTuning}
+        setCurrentTuning={setCurrentTuning}
+        notation={notation}
+      />
+
       {/* Rodapé */}
       <footer className="border-t border-stone-800/80 bg-stone-900/60 py-4 text-center text-xs text-stone-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
@@ -392,7 +422,7 @@ export const App: React.FC = () => {
             Cordas.com © 2026 - Guia de Violão, Harmonia e Improvisação
           </p>
           <div className="flex items-center gap-4 text-[11px] text-stone-400">
-            <span>Violão 6 e 7 Cordas</span>
+            <span>{stringCount} Cordas ({currentTuning.map(s => s.openNote).join(' ')})</span>
             <span>•</span>
             <span>Web Audio API</span>
             <span>•</span>

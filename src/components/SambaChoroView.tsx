@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NoteName, NoteNotation, DisplayMode, StringCount, ViewOrientation, SambaChoroProgression } from '../types/music';
+import { NoteName, NoteNotation, DisplayMode, StringCount, ViewOrientation, SambaChoroProgression, StringTuning } from '../types/music';
 import { SAMBA_CHORO_PRESETS } from '../lib/musicTheory/sambaChoroPresets';
 import { ChordDiagram } from './ChordDiagram';
 import { Fretboard } from './Fretboard';
@@ -11,6 +11,7 @@ interface SambaChoroViewProps {
   notation: NoteNotation;
   displayMode: DisplayMode;
   stringCount: StringCount;
+  tuning?: StringTuning[];
   orientation: ViewOrientation;
 }
 
@@ -18,6 +19,7 @@ export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
   notation,
   displayMode,
   stringCount,
+  tuning,
   orientation
 }) => {
   const [selectedKey, setSelectedKey] = useState<NoteName>('F');
@@ -241,6 +243,7 @@ export const SambaChoroView: React.FC<SambaChoroViewProps> = ({
           <Fretboard
             markers={activeStepMarkers}
             stringCount={stringCount}
+            tuning={tuning}
             orientation={orientation}
             displayMode={displayMode}
             notation={notation}

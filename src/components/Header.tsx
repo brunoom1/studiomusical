@@ -7,10 +7,10 @@ import {
   BookOpen, 
   Volume2, 
   VolumeX, 
-  RotateCcw,
-  Sparkles
+  Sparkles,
+  Sliders
 } from 'lucide-react';
-import { ActiveTab, ViewOrientation, StringCount, DisplayMode, NoteNotation } from '../types/music';
+import { ActiveTab, ViewOrientation, StringCount, DisplayMode, NoteNotation, StringTuning } from '../types/music';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -19,6 +19,8 @@ interface HeaderProps {
   setOrientation: (o: ViewOrientation) => void;
   stringCount: StringCount;
   setStringCount: (count: StringCount) => void;
+  currentTuning: StringTuning[];
+  onOpenTuner: () => void;
   displayMode: DisplayMode;
   setDisplayMode: (mode: DisplayMode) => void;
   notation: NoteNotation;
@@ -34,6 +36,8 @@ export const Header: React.FC<HeaderProps> = ({
   setOrientation,
   stringCount,
   setStringCount,
+  currentTuning,
+  onOpenTuner,
   displayMode,
   setDisplayMode,
   notation,
@@ -76,26 +80,49 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Controles de Preferência do Usuário */}
           <div className="flex items-center flex-wrap gap-2 text-xs">
-            {/* 6 ou 7 cordas */}
+            {/* 4, 6 ou 7 cordas */}
             <div className="bg-stone-800/80 p-0.5 rounded-lg border border-stone-700/60 flex items-center">
               <button
+                onClick={() => setStringCount(4)}
+                className={`px-2 py-1 rounded-md transition-all font-medium ${
+                  stringCount === 4 ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-300 hover:text-white'
+                }`}
+                title="Instrumento de 4 cordas (Cavaquinho, Ukulele, Contrabaixo)"
+              >
+                4 Cordas
+              </button>
+              <button
                 onClick={() => setStringCount(6)}
-                className={`px-2.5 py-1 rounded-md transition-all font-medium ${
+                className={`px-2 py-1 rounded-md transition-all font-medium ${
                   stringCount === 6 ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-300 hover:text-white'
                 }`}
+                title="Violão de 6 cordas tradicional"
               >
                 6 Cordas
               </button>
               <button
                 onClick={() => setStringCount(7)}
-                className={`px-2.5 py-1 rounded-md transition-all font-medium flex items-center gap-1 ${
+                className={`px-2 py-1 rounded-md transition-all font-medium flex items-center gap-1 ${
                   stringCount === 7 ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-300 hover:text-white'
                 }`}
-                title="Violão de 7 cordas com 7ª em Dó (afinação Dino 7 cordas)"
+                title="Violão de 7 cordas (afinação Dino 7 cordas em Dó ou Si)"
               >
                 7 Cordas
               </button>
             </div>
+
+            {/* Botão para Configurar Afinação Personalizada */}
+            <button
+              onClick={onOpenTuner}
+              className="bg-stone-800/80 hover:bg-stone-750 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:border-amber-500"
+              title="Configurar afinação individual de cada corda ou escolher presets"
+            >
+              <Sliders className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-semibold">Afinação:</span>
+              <span className="font-mono text-[10px] text-amber-100 bg-stone-900/80 px-1.5 py-0.2 rounded border border-stone-700">
+                {currentTuning.map(s => s.openNote).join(' ')}
+              </span>
+            </button>
 
             {/* Orientação Horizontal / Vertical */}
             <div className="bg-stone-800/80 p-0.5 rounded-lg border border-stone-700/60 flex items-center">

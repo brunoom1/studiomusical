@@ -90,28 +90,137 @@ export const INTERVALS_INFO: Record<IntervalType, IntervalInfo> = {
 // 5: 6ª corda - E2 (Mi grave)
 // 6: 7ª corda - C2 (Dó grave - afinação tradicional de choro) ou B1
 
-export interface StringTuning {
-  stringNumber: number;
-  openNote: NoteName;
-  octave: number;
-  midiNumber: number;
-  frequency: number;
-}
+export type { StringTuning } from '../../types/music';
+import { StringTuning, TuningPreset } from '../../types/music';
 
 export function midiToFrequency(midi: number): number {
   return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
-export const GUITAR_TUNING_6: StringTuning[] = [
-  { stringNumber: 1, openNote: 'E', octave: 4, midiNumber: 64, frequency: midiToFrequency(64) },
-  { stringNumber: 2, openNote: 'B', octave: 3, midiNumber: 59, frequency: midiToFrequency(59) },
-  { stringNumber: 3, openNote: 'G', octave: 3, midiNumber: 55, frequency: midiToFrequency(55) },
-  { stringNumber: 4, openNote: 'D', octave: 3, midiNumber: 50, frequency: midiToFrequency(50) },
-  { stringNumber: 5, openNote: 'A', octave: 2, midiNumber: 45, frequency: midiToFrequency(45) },
-  { stringNumber: 6, openNote: 'E', octave: 2, midiNumber: 40, frequency: midiToFrequency(40) }
+export function noteToMidi(note: NoteName, octave: number): number {
+  const noteIndices: Record<NoteName, number> = {
+    'C': 0, 'C#': 1, 'Db': 1,
+    'D': 2, 'D#': 3, 'Eb': 3,
+    'E': 4,
+    'F': 5, 'F#': 6, 'Gb': 6,
+    'G': 7, 'G#': 8, 'Ab': 8,
+    'A': 9, 'A#': 10, 'Bb': 10,
+    'B': 11
+  };
+  const noteIndex = noteIndices[note] ?? 0;
+  // MIDI 60 é C4 (Dó central, oitava 4) => (4 + 1) * 12 + 0 = 60
+  return (octave + 1) * 12 + noteIndex;
+}
+
+export function createStringTuning(stringNumber: number, openNote: NoteName, octave: number): StringTuning {
+  const midiNumber = noteToMidi(openNote, octave);
+  return {
+    stringNumber,
+    openNote,
+    octave,
+    midiNumber,
+    frequency: midiToFrequency(midiNumber)
+  };
+}
+
+// Afinações de 4 cordas
+export const TUNING_CAVAQUINHO_4: StringTuning[] = [
+  createStringTuning(1, 'D', 4), // Ré agudo
+  createStringTuning(2, 'B', 3), // Si
+  createStringTuning(3, 'G', 3), // Sol
+  createStringTuning(4, 'D', 3)  // Ré grave
 ];
 
+export const TUNING_BASS_4: StringTuning[] = [
+  createStringTuning(1, 'G', 2),
+  createStringTuning(2, 'D', 2),
+  createStringTuning(3, 'A', 1),
+  createStringTuning(4, 'E', 1)
+];
+
+export const TUNING_UKULELE_4: StringTuning[] = [
+  createStringTuning(1, 'A', 4),
+  createStringTuning(2, 'E', 4),
+  createStringTuning(3, 'C', 4),
+  createStringTuning(4, 'G', 4)
+];
+
+export const TUNING_GUITAR_TOP_4: StringTuning[] = [
+  createStringTuning(1, 'E', 4),
+  createStringTuning(2, 'B', 3),
+  createStringTuning(3, 'G', 3),
+  createStringTuning(4, 'D', 3)
+];
+
+// Afinações de 6 cordas
+export const GUITAR_TUNING_6: StringTuning[] = [
+  createStringTuning(1, 'E', 4),
+  createStringTuning(2, 'B', 3),
+  createStringTuning(3, 'G', 3),
+  createStringTuning(4, 'D', 3),
+  createStringTuning(5, 'A', 2),
+  createStringTuning(6, 'E', 2)
+];
+
+export const GUITAR_TUNING_DROP_D: StringTuning[] = [
+  createStringTuning(1, 'E', 4),
+  createStringTuning(2, 'B', 3),
+  createStringTuning(3, 'G', 3),
+  createStringTuning(4, 'D', 3),
+  createStringTuning(5, 'A', 2),
+  createStringTuning(6, 'D', 2)
+];
+
+export const GUITAR_TUNING_DADGAD: StringTuning[] = [
+  createStringTuning(1, 'D', 4),
+  createStringTuning(2, 'A', 3),
+  createStringTuning(3, 'G', 3),
+  createStringTuning(4, 'D', 3),
+  createStringTuning(5, 'A', 2),
+  createStringTuning(6, 'D', 2)
+];
+
+export const GUITAR_TUNING_OPEN_D: StringTuning[] = [
+  createStringTuning(1, 'D', 4),
+  createStringTuning(2, 'A', 3),
+  createStringTuning(3, 'F#', 3),
+  createStringTuning(4, 'D', 3),
+  createStringTuning(5, 'A', 2),
+  createStringTuning(6, 'D', 2)
+];
+
+// Afinações de 7 cordas
 export const GUITAR_TUNING_7_C: StringTuning[] = [
   ...GUITAR_TUNING_6,
-  { stringNumber: 7, openNote: 'C', octave: 2, midiNumber: 36, frequency: midiToFrequency(36) } // 7ª em Dó (Dino 7 cordas)
+  createStringTuning(7, 'C', 2) // 7ª em Dó (Dino 7 cordas / Samba / Choro)
+];
+
+export const GUITAR_TUNING_7_B: StringTuning[] = [
+  ...GUITAR_TUNING_6,
+  createStringTuning(7, 'B', 1) // 7ª em Si (Violão 7 cordas erudito / jazz)
+];
+
+export const GUITAR_TUNING_7_DROP_A: StringTuning[] = [
+  ...GUITAR_TUNING_6,
+  createStringTuning(7, 'A', 1)
+];
+
+// Lista consolidada de Presets por número de cordas
+export const TUNING_PRESETS: TuningPreset[] = [
+  // 4 cordas
+  { id: 'cavaquinho_d', name: 'Cavaquinho Tradicional (D-G-B-D)', stringCount: 4, description: 'Afinação tradicional de samba e choro para cavaquinho.', strings: TUNING_CAVAQUINHO_4 },
+  { id: 'guitar_top4', name: 'Violão 4 Cordas Agudas (D-G-B-E)', stringCount: 4, description: 'As 4 primeiras cordas do violão padrão.', strings: TUNING_GUITAR_TOP_4 },
+  { id: 'ukulele_std', name: 'Ukulele Standard (G-C-E-A)', stringCount: 4, description: 'Afinação soprano/concerto/tenor padrão de ukulele.', strings: TUNING_UKULELE_4 },
+  { id: 'bass_4', name: 'Contrabaixo Elétrico / Acústico (E-A-D-G)', stringCount: 4, description: 'Afinação em quartas justas do baixo de 4 cordas.', strings: TUNING_BASS_4 },
+
+  // 6 cordas
+  { id: 'guitar_std', name: 'Violão Padrão (E-A-D-G-B-E)', stringCount: 6, description: 'Afinação universal de violão clássico, nylon e aço.', strings: GUITAR_TUNING_6 },
+  { id: 'guitar_drop_d', name: 'Drop D (D-A-D-G-B-E)', stringCount: 6, description: 'Bordão 6ª corda rebaixado 1 tom para Ré.', strings: GUITAR_TUNING_DROP_D },
+  { id: 'guitar_dadgad', name: 'DADGAD (D-A-D-G-A-D)', stringCount: 6, description: 'Afinação modal celta e fingerstyle moderna.', strings: GUITAR_TUNING_DADGAD },
+  { id: 'guitar_open_d', name: 'Open D (D-A-D-F#-A-D)', stringCount: 6, description: 'Afinação aberta que forma a tríade de Ré maior solta.', strings: GUITAR_TUNING_OPEN_D },
+
+  // 7 cordas
+  { id: 'guitar_7_c', name: 'Violão 7 Cordas Choro (7ª em Dó)', stringCount: 7, description: 'Afinação lendária do Dino 7 Cordas, com o bordão em C2.', strings: GUITAR_TUNING_7_C },
+  { id: 'guitar_7_b', name: 'Violão 7 Cordas Tradicional (7ª em Si)', stringCount: 7, description: 'Afinação estendida em quartas (B-E-A-D-G-B-E).', strings: GUITAR_TUNING_7_B },
+  { id: 'guitar_7_drop_a', name: 'Violão 7 Cordas Drop A', stringCount: 7, description: '7ª corda rebaixada para Lá grave (A1).', strings: GUITAR_TUNING_7_DROP_A }
 ];

@@ -1,6 +1,6 @@
-import { NoteName, FretMarker, StringCount } from '../../types/music';
+import { NoteName, FretMarker, StringCount, StringTuning } from '../../types/music';
 import { CHORD_FORMULAS, getChordNotes } from './chords';
-import { getNoteAtFret, identifyInterval, getNoteIndex } from './fretboard';
+import { getNoteAtFret, identifyInterval, resolveTuning } from './fretboard';
 
 export interface ArpeggioPattern {
   id: string;
@@ -108,21 +108,22 @@ export const ARPEGGIO_PATTERNS: ArpeggioPattern[] = [
 export function getArpeggioFretboardMarkers(
   root: NoteName,
   formulaId: string,
-  stringCount: StringCount = 6,
+  tuningInput: StringTuning[] | StringCount = 6,
   fretRange?: { min: number; max: number }
 ): FretMarker[] {
   const formula = CHORD_FORMULAS.find(f => f.id === formulaId);
   if (!formula) return [];
 
+  const tuning = resolveTuning(tuningInput);
   const notes = getChordNotes(root, formula);
   const markers: FretMarker[] = [];
 
   const minFret = fretRange ? fretRange.min : 0;
   const maxFret = fretRange ? fretRange.max : 15;
 
-  for (let s = 0; s < (stringCount === 7 ? 7 : 6); s++) {
+  for (let s = 0; s < tuning.length; s++) {
     for (let f = minFret; f <= maxFret; f++) {
-      const { note, frequency } = getNoteAtFret(s, f, stringCount);
+      const { note, frequency } = getNoteAtFret(s, f, tuning);
       if (notes.includes(note)) {
         const interval = identifyInterval(root, note);
         markers.push({

@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { transposeNote, getNoteIndex, identifyInterval, getNoteAtFret } from '../fretboard';
+import { transposeNote, identifyInterval, getNoteAtFret, resolveTuning } from '../fretboard';
 import { SCALES_DATABASE, getScaleNotes, getScaleFretboardMarkers } from '../scales';
-import { CHORD_FORMULAS, generateShapesForChord, getChordNotes } from '../chords';
+import { generateShapesForChord } from '../chords';
 import { getHarmonicField } from '../harmonicField';
-import { ARPEGGIO_PATTERNS, getArpeggioFretboardMarkers } from '../arpeggios';
+import { getArpeggioFretboardMarkers } from '../arpeggios';
 import { SAMBA_CHORO_PRESETS } from '../sambaChoroPresets';
+import { createStringTuning, GUITAR_TUNING_DROP_D, TUNING_CAVAQUINHO_4 } from '../constants';
 
 describe('Motor de Teoria Musical - Cordas.com', () => {
   it('deve calcular corretamente a transposição cromática', () => {
@@ -12,6 +13,32 @@ describe('Motor de Teoria Musical - Cordas.com', () => {
     expect(transposeNote('F', 7)).toBe('C');
     expect(transposeNote('A', 3)).toBe('C');
     expect(transposeNote('E', 1)).toBe('F');
+  });
+
+  it('deve suportar afinações e contagens de cordas personalizadas (4, 6 e 7 cordas)', () => {
+    // 4 cordas (Cavaquinho)
+    const tuning4 = resolveTuning(4);
+    expect(tuning4.length).toBe(4);
+    expect(tuning4[0].openNote).toBe('D');
+    expect(tuning4[1].openNote).toBe('B');
+
+    // 6 cordas (Violão Drop D)
+    const noteAtBassOpen = getNoteAtFret(5, 0, GUITAR_TUNING_DROP_D);
+    expect(noteAtBassOpen.note).toBe('D');
+
+    // Criação de corda customizada
+    const customString = createStringTuning(1, 'G', 4);
+    expect(customString.openNote).toBe('G');
+    expect(customString.octave).toBe(4);
+    expect(customString.midiNumber).toBe(67);
+  });
+
+  it('deve gerar markers de escala adaptados para instrumento de 4 cordas', () => {
+    const majorScale = SCALES_DATABASE.find(s => s.id === 'major')!;
+    const markers = getScaleFretboardMarkers('D', majorScale, TUNING_CAVAQUINHO_4);
+    const maxStringIndex = Math.max(...markers.map(m => m.stringIndex));
+    expect(maxStringIndex).toBeLessThanOrEqual(3);
+    expect(markers.length).toBeGreaterThan(0);
   });
 
   it('deve gerar corretamente as notas da Escala Maior no Tom de Fá', () => {

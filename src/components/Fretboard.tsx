@@ -2,18 +2,20 @@ import React from 'react';
 import { 
   FretMarker, 
   StringCount, 
+  StringTuning,
   ViewOrientation, 
   DisplayMode, 
   NoteNotation, 
   NoteName 
 } from '../types/music';
 import { NOTE_TO_SOLFEGE, INTERVALS_INFO } from '../lib/musicTheory/constants';
-import { FRET_MARKERS_DOTS, FRET_MARKERS_DOUBLE, getTuning } from '../lib/musicTheory/fretboard';
+import { FRET_MARKERS_DOTS, FRET_MARKERS_DOUBLE, resolveTuning } from '../lib/musicTheory/fretboard';
 import { guitarAudio } from '../lib/audio/guitarSynth';
 
 interface FretboardProps {
   markers: FretMarker[];
-  stringCount: StringCount;
+  stringCount?: StringCount;
+  tuning?: StringTuning[];
   orientation: ViewOrientation;
   displayMode: DisplayMode;
   notation: NoteNotation;
@@ -24,7 +26,8 @@ interface FretboardProps {
 
 export const Fretboard: React.FC<FretboardProps> = ({
   markers,
-  stringCount,
+  stringCount = 6,
+  tuning,
   orientation,
   displayMode,
   notation,
@@ -32,8 +35,8 @@ export const Fretboard: React.FC<FretboardProps> = ({
   highlightedRoot,
   onMarkerClick
 }) => {
-  const tuning = getTuning(stringCount);
-  const numStrings = stringCount === 7 ? 7 : 6;
+  const activeTuning = tuning && tuning.length > 0 ? tuning : resolveTuning(stringCount);
+  const numStrings = activeTuning.length;
 
   // Dimensões SVG
   const isHorizontal = orientation === 'horizontal';
@@ -278,11 +281,11 @@ export const Fretboard: React.FC<FretboardProps> = ({
           {Array.from({ length: numStrings }).map((_, stringIndex) => {
             const y = 20 + 18 + stringIndex * stringSpacing;
             // A 1ª corda (E aguda) é mais fina, a 6ª e 7ª cordas são bordões grossos com bronze/aço
-            const isBass = stringIndex >= 3;
+            const isBass = stringIndex >= Math.floor(numStrings / 2);
             const strokeWidth = 1 + (stringIndex * 0.45);
             const stringColor = isBass ? '#d97706' : '#f3f4f6'; // Bordão dourado vs nylon transparente
 
-            const stringInfo = tuning[stringIndex];
+            const stringInfo = activeTuning[stringIndex];
             const openNoteLabel = notation === 'solfege' 
               ? NOTE_TO_SOLFEGE[stringInfo.openNote] 
               : stringInfo.openNote;

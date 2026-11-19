@@ -1,5 +1,5 @@
-import { ScaleDefinition, NoteName, FretMarker, StringCount } from '../../types/music';
-import { transposeNote, getNoteAtFret, identifyInterval } from './fretboard';
+import { ScaleDefinition, NoteName, FretMarker, StringCount, StringTuning } from '../../types/music';
+import { transposeNote, getNoteAtFret, identifyInterval, resolveTuning } from './fretboard';
 
 export const SCALES_DATABASE: ScaleDefinition[] = [
   {
@@ -171,19 +171,20 @@ export function getScaleNotes(root: NoteName, scale: ScaleDefinition): NoteName[
 export function getScaleFretboardMarkers(
   root: NoteName,
   scale: ScaleDefinition,
-  stringCount: StringCount = 6,
+  tuningInput: StringTuning[] | StringCount = 6,
   maxFrets: number = 15,
   fretRange?: { min: number; max: number }
 ): FretMarker[] {
+  const tuning = resolveTuning(tuningInput);
   const scaleNotes = getScaleNotes(root, scale);
   const markers: FretMarker[] = [];
 
   const minFret = fretRange ? fretRange.min : 0;
   const maxFret = fretRange ? fretRange.max : maxFrets;
 
-  for (let s = 0; s < (stringCount === 7 ? 7 : 6); s++) {
+  for (let s = 0; s < tuning.length; s++) {
     for (let f = minFret; f <= maxFret; f++) {
-      const { note, frequency } = getNoteAtFret(s, f, stringCount);
+      const { note, frequency } = getNoteAtFret(s, f, tuning);
       const isScaleNote = scaleNotes.includes(note);
 
       if (isScaleNote) {

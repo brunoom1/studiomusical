@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NoteName, HarmonicDegree, NoteNotation, DisplayMode, StringCount, ViewOrientation } from '../types/music';
+import { NoteName, HarmonicDegree, NoteNotation, DisplayMode, StringCount, ViewOrientation, StringTuning } from '../types/music';
 import { getHarmonicField, HarmonicFieldType } from '../lib/musicTheory/harmonicField';
 import { generateShapesForChord } from '../lib/musicTheory/chords';
 import { ChordDiagram } from './ChordDiagram';
@@ -15,6 +15,7 @@ interface HarmonicFieldExplorerProps {
   notation: NoteNotation;
   displayMode: DisplayMode;
   stringCount: StringCount;
+  tuning?: StringTuning[];
   orientation: ViewOrientation;
 }
 
@@ -24,6 +25,7 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
   notation,
   displayMode,
   stringCount,
+  tuning,
   orientation
 }) => {
   const [fieldType, setFieldType] = useState<HarmonicFieldType>('major');
@@ -38,17 +40,17 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
 
   // Escala correspondente ao grau
   const degreeScale = SCALES_DATABASE.find(s => s.id === activeDegree.scaleId) || SCALES_DATABASE[0];
-  const scaleMarkers = getScaleFretboardMarkers(activeDegree.chordRoot, degreeScale, stringCount);
+  const scaleMarkers = getScaleFretboardMarkers(activeDegree.chordRoot, degreeScale, tuning || stringCount);
 
   // Arpejo correspondente ao grau
-  const arpeggioMarkers = getArpeggioFretboardMarkers(activeDegree.chordRoot, activeDegree.formulaId, stringCount);
+  const arpeggioMarkers = getArpeggioFretboardMarkers(activeDegree.chordRoot, activeDegree.formulaId, tuning || stringCount);
 
   // Markers para o braço baseado na sub-aba
   const currentMarkers = subTab === 'scale' 
     ? scaleMarkers 
     : subTab === 'arpeggio' 
     ? arpeggioMarkers 
-    : getArpeggioFretboardMarkers(activeDegree.chordRoot, activeDegree.formulaId, stringCount, { min: 0, max: 15 });
+    : getArpeggioFretboardMarkers(activeDegree.chordRoot, activeDegree.formulaId, tuning || stringCount, { min: 0, max: 15 });
 
   const handlePlayDegreeChord = (degree: HarmonicDegree) => {
     const shapes = generateShapesForChord(degree.chordRoot, degree.formulaId);
@@ -217,6 +219,7 @@ export const HarmonicFieldExplorer: React.FC<HarmonicFieldExplorerProps> = ({
           <Fretboard
             markers={currentMarkers}
             stringCount={stringCount}
+            tuning={tuning}
             orientation={orientation}
             displayMode={displayMode}
             notation={notation}

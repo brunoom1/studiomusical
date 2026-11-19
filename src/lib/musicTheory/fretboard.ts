@@ -1,5 +1,13 @@
-import { NoteName, IntervalType, StringCount } from '../../types/music';
-import { CHROMATIC_NOTES, CHROMATIC_NOTES_FLAT, CHROMATIC_NOTES_SHARP, GUITAR_TUNING_6, GUITAR_TUNING_7_C, midiToFrequency } from './constants';
+import { NoteName, IntervalType, StringCount, StringTuning } from '../../types/music';
+import { 
+  CHROMATIC_NOTES, 
+  CHROMATIC_NOTES_FLAT, 
+  CHROMATIC_NOTES_SHARP, 
+  GUITAR_TUNING_6, 
+  GUITAR_TUNING_7_C, 
+  TUNING_CAVAQUINHO_4,
+  midiToFrequency 
+} from './constants';
 
 export const FLAT_KEYS: NoteName[] = ['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb'];
 
@@ -32,16 +40,29 @@ export function getSemitoneDistance(fromNote: NoteName, toNote: NoteName): numbe
   return dist < 0 ? dist + 12 : dist;
 }
 
-export function getTuning(stringCount: StringCount) {
-  return stringCount === 7 ? GUITAR_TUNING_7_C : GUITAR_TUNING_6;
+export function resolveTuning(tuningOrCount: StringTuning[] | StringCount = 6): StringTuning[] {
+  if (Array.isArray(tuningOrCount)) {
+    return tuningOrCount;
+  }
+  if (tuningOrCount === 4) return TUNING_CAVAQUINHO_4;
+  if (tuningOrCount === 7) return GUITAR_TUNING_7_C;
+  return GUITAR_TUNING_6;
 }
 
-export function getNoteAtFret(stringIndex: number, fret: number, stringCount: StringCount = 6): {
+export function getTuning(stringCount: StringCount): StringTuning[] {
+  return resolveTuning(stringCount);
+}
+
+export function getNoteAtFret(
+  stringIndex: number, 
+  fret: number, 
+  tuningInput: StringTuning[] | StringCount = 6
+): {
   note: NoteName;
   midi: number;
   frequency: number;
 } {
-  const tuning = getTuning(stringCount);
+  const tuning = resolveTuning(tuningInput);
   const stringInfo = tuning[stringIndex] || tuning[0];
   const midi = stringInfo.midiNumber + fret;
   const note = transposeNote(stringInfo.openNote, fret);
